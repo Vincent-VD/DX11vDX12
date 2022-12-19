@@ -64,7 +64,7 @@ void GameDX12::Tick()
 // Updates the world.
 void GameDX12::Update(DX::StepTimer const& timer)
 {
-    PIXBeginEvent(PIX_COLOR(1, 0, 0), L"Update");
+    PIXBeginEvent(PIX_COLOR_DEFAULT, L"Update");
 
     float elapsedTime = float(timer.GetElapsedSeconds());
 
@@ -88,14 +88,14 @@ void GameDX12::Render()
     Clear();
 
     auto commandList = m_deviceResources->GetCommandList();
-    PIXBeginEvent(commandList, PIX_COLOR(1, 0, 0), L"Render");
+    PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Render");
 
     // TODO: Add your rendering code here.
 
     PIXEndEvent(commandList);
 
     // Show the new frame.
-    PIXBeginEvent(PIX_COLOR(1, 0, 0), L"Present");
+    PIXBeginEvent(PIX_COLOR_DEFAULT, L"Present");
     m_deviceResources->Present();
 
     // If using the DirectX Tool Kit for DX12, uncomment this line:

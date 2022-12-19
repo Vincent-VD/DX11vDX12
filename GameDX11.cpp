@@ -59,8 +59,9 @@ void GameDX11::Update(DX::StepTimer const& timer)
     float elapsedTime = float(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
+
    
-    //std::cout << timer.GetFramesPerSecond() << std::endl;
+	std::cout << timer.GetFramesPerSecond() << std::endl;
 }
 
 // Draws the scene.
@@ -74,23 +75,37 @@ void GameDX11::Render()
 
     Clear();
 
+    m_deviceResources->PIXBeginEvent(L"Render");
+    auto context = m_deviceResources->GetD3DDeviceContext();
+
     // TODO: Add your rendering code here.
+    context;
 
+    m_deviceResources->PIXEndEvent();
 
+    // Show the new frame.
+    m_deviceResources->Present();
 }
 
 // Helper method to clear the back buffers.
 void GameDX11::Clear()
 {
-    //// Clear the views.
-    //m_d3dContext->ClearRenderTargetView(m_renderTargetView.Get(), Colors::CornflowerBlue);
-    //m_d3dContext->ClearDepthStencilView(m_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    m_deviceResources->PIXBeginEvent(L"Clear");
 
-    //m_d3dContext->OMSetRenderTargets(1, m_renderTargetView.GetAddressOf(), m_depthStencilView.Get());
+    // Clear the views.
+    auto context = m_deviceResources->GetD3DDeviceContext();
+    auto renderTarget = m_deviceResources->GetRenderTargetView();
+    auto depthStencil = m_deviceResources->GetDepthStencilView();
 
-    //// Set the viewport.
-    //D3D11_VIEWPORT viewport = { 0.0f, 0.0f, static_cast<float>(m_outputWidth), static_cast<float>(m_outputHeight), 0.f, 1.f };
-    //m_d3dContext->RSSetViewports(1, &viewport);
+    context->ClearRenderTargetView(renderTarget, Colors::CornflowerBlue);
+    context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
+    context->OMSetRenderTargets(1, &renderTarget, depthStencil);
+
+    // Set the viewport.
+    auto const viewport = m_deviceResources->GetScreenViewport();
+    context->RSSetViewports(1, &viewport);
+
+    m_deviceResources->PIXEndEvent();
 }
 
 void GameDX11::CreateDeviceDependentResources()
