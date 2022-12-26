@@ -32,6 +32,7 @@
 #pragma clang diagnostic ignored "-Wfloat-equal"
 #endif
 
+using namespace DirectX;
 
 namespace DirectX11
 {
@@ -790,10 +791,10 @@ namespace DirectX11
             explicit Color(const XMVECTORF32& F) noexcept { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
             // BGRA Direct3D 9 D3DCOLOR packed color
-            explicit Color(const DirectX11::PackedVector::XMCOLOR& Packed) noexcept;
+            explicit Color(const PackedVector::XMCOLOR& Packed) noexcept;
 
             // RGBA XNA Game Studio packed color
-            explicit Color(const DirectX11::PackedVector::XMUBYTEN4& Packed) noexcept;
+            explicit Color(const PackedVector::XMUBYTEN4& Packed) noexcept;
 
             Color(const Color&) = default;
             Color& operator=(const Color&) = default;
@@ -810,8 +811,8 @@ namespace DirectX11
 
             // Assignment operators
             Color& operator= (const XMVECTORF32& F) noexcept { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
-            Color& operator= (const DirectX11::PackedVector::XMCOLOR& Packed) noexcept;
-            Color& operator= (const DirectX11::PackedVector::XMUBYTEN4& Packed) noexcept;
+            Color& operator= (const PackedVector::XMCOLOR& Packed) noexcept;
+            Color& operator= (const PackedVector::XMUBYTEN4& Packed) noexcept;
             Color& operator+= (const Color& c) noexcept;
             Color& operator-= (const Color& c) noexcept;
             Color& operator*= (const Color& c) noexcept;
@@ -836,8 +837,8 @@ namespace DirectX11
             void A(float a) noexcept { w = a; }
 
             // Color operations
-            DirectX11::PackedVector::XMCOLOR BGRA() const noexcept;
-            DirectX11::PackedVector::XMUBYTEN4 RGBA() const noexcept;
+            PackedVector::XMCOLOR BGRA() const noexcept;
+            PackedVector::XMUBYTEN4 RGBA() const noexcept;
 
             Vector3 ToVector3() const noexcept;
             Vector4 ToVector4() const noexcept;

@@ -35,6 +35,7 @@
 namespace DirectX12
 {
     class ResourceUploadBatch;
+    enum DDS_ALPHA_MODE : uint32_t;
 
 #ifndef DDS_ALPHA_MODE_DEFINED
 #define DDS_ALPHA_MODE_DEFINED

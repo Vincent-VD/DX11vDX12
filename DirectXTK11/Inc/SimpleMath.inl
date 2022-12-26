@@ -3313,13 +3313,13 @@ inline float Quaternion::Angle(const Quaternion& q1, const Quaternion& q2) noexc
  *
  ****************************************************************************/
 
-inline Color::Color(const DirectX11::PackedVector::XMCOLOR& Packed) noexcept
+inline Color::Color(const PackedVector::XMCOLOR& Packed) noexcept
 {
     using namespace DirectX11;
     XMStoreFloat4(this, PackedVector::XMLoadColor(&Packed));
 }
 
-inline Color::Color(const DirectX11::PackedVector::XMUBYTEN4& Packed) noexcept
+inline Color::Color(const PackedVector::XMUBYTEN4& Packed) noexcept
 {
     using namespace DirectX11;
     XMStoreFloat4(this, PackedVector::XMLoadUByteN4(&Packed));
@@ -3348,14 +3348,14 @@ inline bool Color::operator != (const Color& c) const noexcept
 // Assignment operators
 //------------------------------------------------------------------------------
 
-inline Color& Color::operator= (const DirectX11::PackedVector::XMCOLOR& Packed) noexcept
+inline Color& Color::operator= (const PackedVector::XMCOLOR& Packed) noexcept
 {
     using namespace DirectX11;
     XMStoreFloat4(this, PackedVector::XMLoadColor(&Packed));
     return *this;
 }
 
-inline Color& Color::operator= (const DirectX11::PackedVector::XMUBYTEN4& Packed) noexcept
+inline Color& Color::operator= (const PackedVector::XMUBYTEN4& Packed) noexcept
 {
     using namespace DirectX11;
     XMStoreFloat4(this, PackedVector::XMLoadUByteN4(&Packed));
@@ -3485,7 +3485,7 @@ inline Color operator* (float S, const Color& C) noexcept
 // Color operations
 //------------------------------------------------------------------------------
 
-inline DirectX11::PackedVector::XMCOLOR Color::BGRA() const noexcept
+inline PackedVector::XMCOLOR Color::BGRA() const noexcept
 {
     using namespace DirectX11;
     const XMVECTOR clr = XMLoadFloat4(this);
@@ -3494,7 +3494,7 @@ inline DirectX11::PackedVector::XMCOLOR Color::BGRA() const noexcept
     return Packed;
 }
 
-inline DirectX11::PackedVector::XMUBYTEN4 Color::RGBA() const noexcept
+inline PackedVector::XMUBYTEN4 Color::RGBA() const noexcept
 {
     using namespace DirectX11;
     const XMVECTOR clr = XMLoadFloat4(this);
@@ -3675,7 +3675,7 @@ inline bool Ray::Intersects(const BoundingBox& box, _Out_ float& Dist) const noe
 
 inline bool Ray::Intersects(const Vector3& tri0, const Vector3& tri1, const Vector3& tri2, _Out_ float& Dist) const noexcept
 {
-    return DirectX11::TriangleTests::Intersects(position, direction, tri0, tri1, tri2, Dist);
+    return TriangleTests::Intersects(position, direction, tri0, tri1, tri2, Dist);
 }
 
 inline bool Ray::Intersects(const Plane& plane, _Out_ float& Dist) const noexcept

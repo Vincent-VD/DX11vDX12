@@ -16,9 +16,9 @@
 #include "DDSTextureLoader.h"
 #include "PlatformHelpers.h"
 
-
 namespace DirectX12
 {
+    using namespace DirectX;
     namespace LoaderHelpers
     {
         //--------------------------------------------------------------------------------------
@@ -934,7 +934,6 @@ namespace DirectX12
         }
 
     #undef ISBITMASK
-
         //--------------------------------------------------------------------------------------
         inline DirectX12::DDS_ALPHA_MODE GetAlphaMode(_In_ const DDS_HEADER* header) noexcept
         {

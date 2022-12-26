@@ -63,6 +63,7 @@
 
 #include <DirectXMath.h>
 
+using namespace DirectX;
 
 namespace DirectX12
 {
