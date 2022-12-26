@@ -7,7 +7,8 @@
 
 extern void ExitGameDX12() noexcept;
 
-using namespace DirectX;
+using namespace DirectX12;
+using namespace DirectX12::SimpleMath;
 
 using Microsoft::WRL::ComPtr;
 
@@ -91,6 +92,17 @@ void GameDX12::Render()
     PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Render");
 
     // TODO: Add your rendering code here.
+    m_effect->Apply(commandList);
+
+    m_batch->Begin(commandList);
+
+    VertexPositionColor v1(Vector3(400.f, 150.f, 0.f), Colors::Red);
+    VertexPositionColor v2(Vector3(600.f, 450.f, 0.f), Colors::Green);
+    VertexPositionColor v3(Vector3(200.f, 450.f, 0.f), Colors::Blue);
+
+    m_batch->DrawTriangle(v1, v2, v3);
+
+    m_batch->End();
 
     PIXEndEvent(commandList);
 
@@ -164,11 +176,29 @@ void GameDX12::CreateDeviceDependentResources()
     m_graphicsMemory = std::make_unique<DirectX12::GraphicsMemory>(device);
 
     // TODO: Initialize device dependent objects here (independent of window size).
+    m_batch = std::make_unique<PrimitiveBatch<VertexType>>(device);
+
+    RenderTargetState rtState(m_deviceResources->GetBackBufferFormat(),
+        m_deviceResources->GetDepthBufferFormat());
+
+    EffectPipelineStateDescription pd(
+        &VertexType::InputLayout,
+        CommonStates::Opaque,
+        CommonStates::DepthDefault,
+        CommonStates::CullNone,
+        rtState);
+
+    m_effect = std::make_unique<BasicEffect>(device, EffectFlags::VertexColor, pd);
 
 }
 
 void GameDX12::CreateWindowSizeDependentResources()
-{
+{const auto size = m_deviceResources->GetOutputSize();
+
+   const Matrix proj = Matrix::CreateScale(2.f / static_cast<float>(size.right),
+        -2.f / static_cast<float>(size.bottom), 1.f)
+        * Matrix::CreateTranslation(-1.f, 1.f, 0.f);
+    m_effect->SetProjection(proj);
 }
 
 void GameDX12::OnActivated()
@@ -218,6 +248,8 @@ void GameDX12::OnDeviceLost()
 {
     // If using the DirectX Tool Kit for DX12, uncomment this line:
     m_graphicsMemory.reset();
+    m_effect.reset();
+    m_batch.reset();
 }
 
 void GameDX12::OnDeviceRestored()

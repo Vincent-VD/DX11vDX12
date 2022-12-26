@@ -5,8 +5,12 @@
 #include "pch.h"
 #include "GameDX11.h"
 
+#include "DirectXTK11/Inc/SimpleMath.h"
+
 extern void ExitGame() noexcept;
 
+using namespace DirectX11;
+using namespace DirectX11::SimpleMath;
 
 using Microsoft::WRL::ComPtr;
 
@@ -78,7 +82,23 @@ void GameDX11::Render()
     auto context = m_deviceResources->GetD3DDeviceContext();
 
     // TODO: Add your rendering code here.
-    context;
+    context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+    context->OMSetDepthStencilState(m_states->DepthNone(), 0);
+    context->RSSetState(m_states->CullNone());
+
+    m_effect->Apply(context);
+
+    context->IASetInputLayout(m_inputLayout.Get());
+
+    m_batch->Begin();
+
+    VertexPositionColor v1(Vector3(400.f, 150.f, 0.f), Colors::Red);
+    VertexPositionColor v2(Vector3(600.f, 450.f, 0.f), Colors::Green);
+    VertexPositionColor v3(Vector3(200.f, 450.f, 0.f), Colors::Blue);
+
+    m_batch->DrawTriangle(v1, v2, v3);
+
+    m_batch->End();
 
     m_deviceResources->PIXEndEvent();
 
@@ -129,6 +149,12 @@ void GameDX11::CreateDeviceDependentResources()
 void GameDX11::CreateWindowSizeDependentResources()
 {
     // TODO: Initialize windows-size dependent objects here.
+    const auto size = m_deviceResources->GetOutputSize();
+
+    const Matrix proj = Matrix::CreateScale(2.f / static_cast<float>(size.right),
+        -2.f / static_cast<float>(size.bottom), 1.f)
+        * Matrix::CreateTranslation(-1.f, 1.f, 0.f);
+    m_effect->SetProjection(proj);
 }
 
 void GameDX11::OnActivated()
@@ -177,6 +203,10 @@ void GameDX11::OnWindowSizeChanged(int width, int height)
 void GameDX11::OnDeviceLost()
 {
     // TODO: Add Direct3D resource cleanup here.
+    m_states.reset();
+    m_effect.reset();
+    m_batch.reset();
+    m_inputLayout.Reset();
 }
 
 void GameDX11::OnDeviceRestored()
