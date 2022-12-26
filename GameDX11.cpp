@@ -7,7 +7,6 @@
 
 extern void ExitGame() noexcept;
 
-using namespace DirectX;
 
 using Microsoft::WRL::ComPtr;
 
@@ -97,7 +96,7 @@ void GameDX11::Clear()
     auto renderTarget = m_deviceResources->GetRenderTargetView();
     auto depthStencil = m_deviceResources->GetDepthStencilView();
 
-    context->ClearRenderTargetView(renderTarget, Colors::CornflowerBlue);
+    context->ClearRenderTargetView(renderTarget, DirectX::Colors::CornflowerBlue);
     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
 
@@ -113,7 +112,18 @@ void GameDX11::CreateDeviceDependentResources()
     auto device = m_deviceResources->GetD3DDevice();
 
     // TODO: Initialize device dependent objects here (independent of window size).
-    device;
+    m_states = std::make_unique<DirectX11::CommonStates>(device);
+
+    m_effect = std::make_unique<DirectX11::BasicEffect>(device);
+    m_effect->SetVertexColorEnabled(true);
+
+    DX::ThrowIfFailed(
+        DirectX11::CreateInputLayoutFromEffect<VertexType>(device, m_effect.get(),
+            m_inputLayout.ReleaseAndGetAddressOf())
+    );
+
+    auto context = m_deviceResources->GetD3DDeviceContext();
+    m_batch = std::make_unique<DirectX11::PrimitiveBatch<VertexType>>(context);
 }
 
 void GameDX11::CreateWindowSizeDependentResources()

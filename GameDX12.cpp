@@ -161,7 +161,7 @@ void GameDX12::CreateDeviceDependentResources()
     }
 
     // If using the DirectX Tool Kit for DX12, uncomment this line:
-    m_graphicsMemory = std::make_unique<GraphicsMemory>(device);
+    m_graphicsMemory = std::make_unique<DirectX12::GraphicsMemory>(device);
 
     // TODO: Initialize device dependent objects here (independent of window size).
 

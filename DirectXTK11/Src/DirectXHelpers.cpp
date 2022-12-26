@@ -13,7 +13,7 @@
 #include "PlatformHelpers.h"
 
 
-using namespace DirectX11;
+using namespace DirectX;
 
 _Use_decl_annotations_
 HRESULT DirectX11::CreateInputLayoutFromEffect(

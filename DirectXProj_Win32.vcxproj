@@ -229,7 +229,7 @@
     <ResourceCompile Include="DirectXProj_Win32.rc" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\DirectXProj_Win32\DirectXTK11\DirectXTK_Desktop_2022.vcxproj">
+    <ProjectReference Include="DirectXTK11\DirectXTK_Desktop_2022.vcxproj">
       <Project>{e0b52ae7-e160-4d32-bf3f-910b785e5a8e}</Project>
     </ProjectReference>
     <ProjectReference Include="DirectXTK12\DirectXTK_Desktop_2022_Win10.vcxproj">

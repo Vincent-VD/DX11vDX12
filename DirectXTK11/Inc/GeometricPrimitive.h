@@ -22,6 +22,7 @@
 
 namespace DirectX11
 {
+    using namespace DirectX;
     inline namespace DX11
     {
         class IEffect;
