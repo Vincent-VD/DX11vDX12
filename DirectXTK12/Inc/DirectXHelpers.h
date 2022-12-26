@@ -115,6 +115,7 @@
 
 namespace DirectX12
 {
+    using namespace DirectX;
     constexpr D3D12_CPU_DESCRIPTOR_HANDLE D3D12_CPU_DESCRIPTOR_HANDLE_ZERO = {};
 
     // Creates a shader resource view from an arbitrary resource

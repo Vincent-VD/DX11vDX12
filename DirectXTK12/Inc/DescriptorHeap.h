@@ -28,7 +28,7 @@
 #include <wrl/client.h>
 
 
-namespace DirectX12
+namespace DirectX
 {
     // A contiguous linear random-access descriptor heap
     class DescriptorHeap

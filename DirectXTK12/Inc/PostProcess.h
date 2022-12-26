@@ -27,8 +27,9 @@
 #include "RenderTargetState.h"
 
 
-namespace DirectX12
+namespace DirectX
 {
+    using namespace DirectX;
     inline namespace DX12
     {
         //------------------------------------------------------------------------------

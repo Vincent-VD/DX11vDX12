@@ -26,7 +26,7 @@
 #include <cstdint>
 
 
-namespace DirectX12
+namespace DirectX
 {
     // Encapsulates all render target state when creating pipeline state objects
     class RenderTargetState

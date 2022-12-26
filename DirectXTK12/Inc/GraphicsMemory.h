@@ -25,7 +25,7 @@
 #include <memory>
 
 
-namespace DirectX12
+namespace DirectX
 {
     class LinearAllocatorPage;
 

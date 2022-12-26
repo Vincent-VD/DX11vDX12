@@ -17,6 +17,9 @@
     <Filter Include="Shaders">
       <UniqueIdentifier>{2b911540-d18a-4032-a72c-bf24b099aa37}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Includes">
+      <UniqueIdentifier>{90fac1d3-b64a-49e0-9579-891fd7687ec7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -49,6 +52,51 @@
     </ClInclude>
     <ClInclude Include="IDeviceNotify.h">
       <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferHelpers.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="CommonStates.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="DDSTextureLoader.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXHelpers.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="Effects.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="GeometricPrimitive.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsMemory.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="Model.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="PostProcess.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="PrimitiveBatch.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="ScreenGrab.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteBatch.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="SpriteFont.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexTypes.h">
+      <Filter>Includes</Filter>
+    </ClInclude>
+    <ClInclude Include="WICTextureLoader.h">
+      <Filter>Includes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

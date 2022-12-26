@@ -790,10 +790,10 @@ namespace DirectX12
             explicit Color(const XMVECTORF32& F) noexcept { this->x = F.f[0]; this->y = F.f[1]; this->z = F.f[2]; this->w = F.f[3]; }
 
             // BGRA Direct3D 9 D3DCOLOR packed color
-            explicit Color(const DirectX12::PackedVector::XMCOLOR& Packed) noexcept;
+            explicit Color(const DirectX::PackedVector::XMCOLOR& Packed) noexcept;
 
             // RGBA XNA Game Studio packed color
-            explicit Color(const DirectX12::PackedVector::XMUBYTEN4& Packed) noexcept;
+            explicit Color(const DirectX::PackedVector::XMUBYTEN4& Packed) noexcept;
 
             Color(const Color&) = default;
             Color& operator=(const Color&) = default;
@@ -810,8 +810,8 @@ namespace DirectX12
 
             // Assignment operators
             Color& operator= (const XMVECTORF32& F) noexcept { x = F.f[0]; y = F.f[1]; z = F.f[2]; w = F.f[3]; return *this; }
-            Color& operator= (const DirectX12::PackedVector::XMCOLOR& Packed) noexcept;
-            Color& operator= (const DirectX12::PackedVector::XMUBYTEN4& Packed) noexcept;
+            Color& operator= (const DirectX::PackedVector::XMCOLOR& Packed) noexcept;
+            Color& operator= (const DirectX::PackedVector::XMUBYTEN4& Packed) noexcept;
             Color& operator+= (const Color& c) noexcept;
             Color& operator-= (const Color& c) noexcept;
             Color& operator*= (const Color& c) noexcept;
@@ -836,8 +836,8 @@ namespace DirectX12
             void A(float a) noexcept { w = a; }
 
             // Color operations
-            DirectX12::PackedVector::XMCOLOR BGRA() const noexcept;
-            DirectX12::PackedVector::XMUBYTEN4 RGBA() const noexcept;
+            DirectX::PackedVector::XMCOLOR BGRA() const noexcept;
+            DirectX::PackedVector::XMUBYTEN4 RGBA() const noexcept;
 
             Vector3 ToVector3() const noexcept;
             Vector4 ToVector4() const noexcept;
@@ -1002,9 +1002,9 @@ namespace DirectX12
 namespace std
 {
 
-    template<> struct less<DirectX12::SimpleMath::Rectangle>
+    template<> struct less<DirectX::SimpleMath::Rectangle>
     {
-        bool operator()(const DirectX12::SimpleMath::Rectangle& r1, const DirectX12::SimpleMath::Rectangle& r2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Rectangle& r1, const DirectX::SimpleMath::Rectangle& r2) const noexcept
         {
             return ((r1.x < r2.x)
                 || ((r1.x == r2.x) && (r1.y < r2.y))
@@ -1013,17 +1013,17 @@ namespace std
         }
     };
 
-    template<> struct less<DirectX12::SimpleMath::Vector2>
+    template<> struct less<DirectX::SimpleMath::Vector2>
     {
-        bool operator()(const DirectX12::SimpleMath::Vector2& V1, const DirectX12::SimpleMath::Vector2& V2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Vector2& V1, const DirectX::SimpleMath::Vector2& V2) const noexcept
         {
             return ((V1.x < V2.x) || ((V1.x == V2.x) && (V1.y < V2.y)));
         }
     };
 
-    template<> struct less<DirectX12::SimpleMath::Vector3>
+    template<> struct less<DirectX::SimpleMath::Vector3>
     {
-        bool operator()(const DirectX12::SimpleMath::Vector3& V1, const DirectX12::SimpleMath::Vector3& V2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Vector3& V1, const DirectX::SimpleMath::Vector3& V2) const noexcept
         {
             return ((V1.x < V2.x)
                 || ((V1.x == V2.x) && (V1.y < V2.y))
@@ -1031,9 +1031,9 @@ namespace std
         }
     };
 
-    template<> struct less<DirectX12::SimpleMath::Vector4>
+    template<> struct less<DirectX::SimpleMath::Vector4>
     {
-        bool operator()(const DirectX12::SimpleMath::Vector4& V1, const DirectX12::SimpleMath::Vector4& V2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Vector4& V1, const DirectX::SimpleMath::Vector4& V2) const noexcept
         {
             return ((V1.x < V2.x)
                 || ((V1.x == V2.x) && (V1.y < V2.y))
@@ -1042,9 +1042,9 @@ namespace std
         }
     };
 
-    template<> struct less<DirectX12::SimpleMath::Matrix>
+    template<> struct less<DirectX::SimpleMath::Matrix>
     {
-        bool operator()(const DirectX12::SimpleMath::Matrix& M1, const DirectX12::SimpleMath::Matrix& M2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Matrix& M1, const DirectX::SimpleMath::Matrix& M2) const noexcept
         {
             if (M1._11 != M2._11) return M1._11 < M2._11;
             if (M1._12 != M2._12) return M1._12 < M2._12;
@@ -1067,9 +1067,9 @@ namespace std
         }
     };
 
-    template<> struct less<DirectX12::SimpleMath::Plane>
+    template<> struct less<DirectX::SimpleMath::Plane>
     {
-        bool operator()(const DirectX12::SimpleMath::Plane& P1, const DirectX12::SimpleMath::Plane& P2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Plane& P1, const DirectX::SimpleMath::Plane& P2) const noexcept
         {
             return ((P1.x < P2.x)
                 || ((P1.x == P2.x) && (P1.y < P2.y))
@@ -1078,9 +1078,9 @@ namespace std
         }
     };
 
-    template<> struct less<DirectX12::SimpleMath::Quaternion>
+    template<> struct less<DirectX::SimpleMath::Quaternion>
     {
-        bool operator()(const DirectX12::SimpleMath::Quaternion& Q1, const DirectX12::SimpleMath::Quaternion& Q2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Quaternion& Q1, const DirectX::SimpleMath::Quaternion& Q2) const noexcept
         {
             return ((Q1.x < Q2.x)
                 || ((Q1.x == Q2.x) && (Q1.y < Q2.y))
@@ -1089,9 +1089,9 @@ namespace std
         }
     };
 
-    template<> struct less<DirectX12::SimpleMath::Color>
+    template<> struct less<DirectX::SimpleMath::Color>
     {
-        bool operator()(const DirectX12::SimpleMath::Color& C1, const DirectX12::SimpleMath::Color& C2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Color& C1, const DirectX::SimpleMath::Color& C2) const noexcept
         {
             return ((C1.x < C2.x)
                 || ((C1.x == C2.x) && (C1.y < C2.y))
@@ -1100,9 +1100,9 @@ namespace std
         }
     };
 
-    template<> struct less<DirectX12::SimpleMath::Ray>
+    template<> struct less<DirectX::SimpleMath::Ray>
     {
-        bool operator()(const DirectX12::SimpleMath::Ray& R1, const DirectX12::SimpleMath::Ray& R2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Ray& R1, const DirectX::SimpleMath::Ray& R2) const noexcept
         {
             if (R1.position.x != R2.position.x) return R1.position.x < R2.position.x;
             if (R1.position.y != R2.position.y) return R1.position.y < R2.position.y;
@@ -1116,9 +1116,9 @@ namespace std
         }
     };
 
-    template<> struct less<DirectX12::SimpleMath::Viewport>
+    template<> struct less<DirectX::SimpleMath::Viewport>
     {
-        bool operator()(const DirectX12::SimpleMath::Viewport& vp1, const DirectX12::SimpleMath::Viewport& vp2) const noexcept
+        bool operator()(const DirectX::SimpleMath::Viewport& vp1, const DirectX::SimpleMath::Viewport& vp2) const noexcept
         {
             if (vp1.x != vp2.x) return (vp1.x < vp2.x);
             if (vp1.y != vp2.y) return (vp1.y < vp2.y);

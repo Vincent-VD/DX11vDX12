@@ -1,5 +1,7 @@
 #pragma once
+#include "pch.h"
 #include "BaseGame.h"
+#include "StepTimer.h"
 #include "DeviceResourcesDX12.h"
 
 class GameDX12 : public BaseGame, DX::IDeviceNotify
@@ -44,12 +46,12 @@ private:
 
 	std::unique_ptr<DX::DeviceResourcesDX12> m_deviceResources;
 
-	std::unique_ptr<DirectX::GraphicsMemory> m_graphicsMemory;
+	std::unique_ptr<DirectX12::GraphicsMemory> m_graphicsMemory;
 
-	using VertexType = DirectX::VertexPositionColor;
+	using VertexType = DirectX12::VertexPositionColor;
 
-	std::unique_ptr<DirectX::BasicEffect> m_effect;
-	std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
+	std::unique_ptr<DirectX12::BasicEffect> m_effect;
+	std::unique_ptr<DirectX12::PrimitiveBatch<VertexType>> m_batch;
 
 
 	virtual void Update(DX::StepTimer const& timer) override;
@@ -60,4 +62,3 @@ private:
 	virtual void CreateDeviceDependentResources() override;
 	virtual void CreateWindowSizeDependentResources() override;
 };
-

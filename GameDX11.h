@@ -3,14 +3,11 @@
 //
 
 #pragma once
-
+#include "pch.h"
 #include "BaseGame.h"
 #include "StepTimer.h"
 #include "DeviceResources.h"
 
-
-// A basic game implementation that creates a D3D11 device and
-// provides a game loop.
 class GameDX11 : public BaseGame, DX::IDeviceNotify
 {
 public:
@@ -46,12 +43,12 @@ private:
 
 	std::unique_ptr<DX::DeviceResourcesDX11> m_deviceResources;
 
-	using VertexType = DirectX::VertexPositionColor;
+	using VertexType = DirectX11::VertexPositionColor;
 
-	std::unique_ptr<DirectX::CommonStates> m_states;
-	std::unique_ptr<DirectX::BasicEffect> m_effect;
-	std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
+	std::unique_ptr<DirectX11::CommonStates> m_states;
+	std::unique_ptr<DirectX11::BasicEffect> m_effect;
+	std::unique_ptr<DirectX11::DX11::PrimitiveBatch<VertexType>> m_batch;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout; 
 
 	virtual void Update(DX::StepTimer const& timer) override;
 	virtual void Render() override;

@@ -23,7 +23,7 @@
 #include <memory>
 
 
-namespace DirectX12
+namespace DirectX
 {
     inline namespace DX12
     {

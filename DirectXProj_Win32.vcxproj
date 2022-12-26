@@ -179,16 +179,31 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="BaseGame.h" />
+    <ClInclude Include="BufferHelpers.h" />
+    <ClInclude Include="CommonStates.h" />
     <ClInclude Include="d3dx12.h" />
+    <ClInclude Include="DDSTextureLoader.h" />
     <ClInclude Include="DeviceResources.h" />
     <ClInclude Include="DeviceResourcesDX12.h" />
+    <ClInclude Include="DirectXHelpers.h" />
     <ClInclude Include="DXSampleHelper.h" />
+    <ClInclude Include="Effects.h" />
     <ClInclude Include="GameDX11.h" />
     <ClInclude Include="GameDX12.h" />
+    <ClInclude Include="GeometricPrimitive.h" />
+    <ClInclude Include="GraphicsMemory.h" />
     <ClInclude Include="IDeviceNotify.h" />
+    <ClInclude Include="Model.h" />
     <ClInclude Include="pch.h" />
+    <ClInclude Include="PostProcess.h" />
+    <ClInclude Include="PrimitiveBatch.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="ScreenGrab.h" />
+    <ClInclude Include="SpriteBatch.h" />
+    <ClInclude Include="SpriteFont.h" />
     <ClInclude Include="StepTimer.h" />
+    <ClInclude Include="VertexTypes.h" />
+    <ClInclude Include="WICTextureLoader.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BaseGame.cpp" />

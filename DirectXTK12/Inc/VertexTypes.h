@@ -25,6 +25,8 @@
 
 namespace DirectX12
 {
+    using namespace DirectX;
+
     inline namespace DX12
     {
     // Vertex struct holding position information.

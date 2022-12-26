@@ -32,7 +32,7 @@
 #include <vector>
 
 
-namespace DirectX12
+namespace DirectX
 {
     class ResourceUploadBatch;
 

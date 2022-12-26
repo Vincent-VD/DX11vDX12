@@ -33,6 +33,7 @@
 
 namespace DirectX12
 {
+    using namespace DirectX;
     class DescriptorHeap;
     class ResourceUploadBatch;
 

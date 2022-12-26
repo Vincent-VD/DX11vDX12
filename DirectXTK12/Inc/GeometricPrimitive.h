@@ -19,6 +19,7 @@
 
 namespace DirectX12
 {
+    using namespace DirectX;
     class ResourceUploadBatch;
 
     inline namespace DX12
