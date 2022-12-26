@@ -19,7 +19,7 @@
 #include "ResourceUploadBatch.h"
 #include "DescriptorHeap.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 
@@ -77,7 +77,7 @@ static const char spriteFontMagic[] = "DXTKfont";
 
 
 // Comparison operators make our sorted glyph vector work with std::binary_search and lower_bound.
-namespace DirectX
+namespace DirectX12
 {
     static inline bool operator< (SpriteFont::Glyph const& left, SpriteFont::Glyph const& right) noexcept
     {

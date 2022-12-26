@@ -19,7 +19,7 @@
 #endif
 
 
-namespace DirectX
+namespace DirectX12
 {
     // Derive from this to customize operator new and delete for
     // types that have special heap alignment requirements.

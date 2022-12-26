@@ -18,7 +18,7 @@
 #include "PlatformHelpers.h"
 
 
-namespace DirectX
+namespace DirectX12
 {
     // Helper for reading binary data, either from the filesystem a memory buffer.
     class BinaryReader

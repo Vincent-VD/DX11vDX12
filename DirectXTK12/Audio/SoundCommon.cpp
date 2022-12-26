@@ -11,7 +11,7 @@
 #include "pch.h"
 #include "SoundCommon.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 
 
 namespace
@@ -29,7 +29,7 @@ namespace
 // Wave format utilities
 //======================================================================================
 
-bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
+bool DirectX12::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 {
     if (!wfx)
         return false;
@@ -487,7 +487,7 @@ bool DirectX::IsValid(_In_ const WAVEFORMATEX* wfx) noexcept
 }
 
 
-uint32_t DirectX::GetDefaultChannelMask(int channels) noexcept
+uint32_t DirectX12::GetDefaultChannelMask(int channels) noexcept
 {
     switch (channels)
     {
@@ -505,7 +505,7 @@ uint32_t DirectX::GetDefaultChannelMask(int channels) noexcept
 
 
 _Use_decl_annotations_
-void DirectX::CreateIntegerPCM(
+void DirectX12::CreateIntegerPCM(
     WAVEFORMATEX* wfx,
     int sampleRate,
     int channels,
@@ -526,7 +526,7 @@ void DirectX::CreateIntegerPCM(
 
 
 _Use_decl_annotations_
-void DirectX::CreateFloatPCM(
+void DirectX12::CreateFloatPCM(
     WAVEFORMATEX* wfx,
     int sampleRate,
     int channels) noexcept
@@ -546,7 +546,7 @@ void DirectX::CreateFloatPCM(
 
 
 _Use_decl_annotations_
-void DirectX::CreateADPCM(
+void DirectX12::CreateADPCM(
     WAVEFORMATEX* wfx,
     size_t wfxSize,
     int sampleRate,
@@ -590,7 +590,7 @@ void DirectX::CreateADPCM(
 
 #ifdef DIRECTX_ENABLE_XWMA
 _Use_decl_annotations_
-void DirectX::CreateXWMA(
+void DirectX12::CreateXWMA(
     WAVEFORMATEX* wfx,
     int sampleRate,
     int channels,
@@ -663,7 +663,7 @@ void DirectX::CreateXMA2(
 
 
 _Use_decl_annotations_
-bool DirectX::ComputePan(float pan, unsigned int channels, float* matrix) noexcept
+bool DirectX12::ComputePan(float pan, unsigned int channels, float* matrix) noexcept
 {
     memset(matrix, 0, sizeof(float) * 16);
 

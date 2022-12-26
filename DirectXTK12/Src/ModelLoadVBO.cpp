@@ -19,7 +19,7 @@
 
 #include "vbo.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 static_assert(sizeof(VertexPositionNormalTexture) == 32, "VBO vertex size mismatch");
@@ -47,7 +47,7 @@ namespace
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
+std::unique_ptr<Model> DirectX12::Model::CreateFromVBO(
     ID3D12Device* device,
     const uint8_t* meshData, size_t dataSize,
     ModelLoaderFlags flags)
@@ -132,7 +132,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromVBO(
+std::unique_ptr<Model> DirectX12::Model::CreateFromVBO(
     ID3D12Device* device,
     const wchar_t* szFileName,
     ModelLoaderFlags flags)

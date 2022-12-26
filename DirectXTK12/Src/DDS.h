@@ -20,7 +20,7 @@
 
 #include <cstdint>
 
-namespace DirectX
+namespace DirectX12
 {
 
 #pragma pack(push,1)

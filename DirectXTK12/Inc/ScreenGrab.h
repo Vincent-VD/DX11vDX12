@@ -38,7 +38,7 @@
 #pragma comment(lib,"uuid.lib")
 
 
-namespace DirectX
+namespace DirectX12
 {
     HRESULT __cdecl SaveDDSTextureToFile(
         _In_ ID3D12CommandQueue* pCommandQueue,

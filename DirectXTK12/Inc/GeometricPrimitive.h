@@ -17,7 +17,7 @@
 #include <vector>
 
 
-namespace DirectX
+namespace DirectX12
 {
     class ResourceUploadBatch;
 

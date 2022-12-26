@@ -17,7 +17,7 @@
  *
  ****************************************************************************/
 
-namespace DirectX
+namespace DirectX12
 {
     namespace SimpleMath
     {
@@ -54,8 +54,8 @@ namespace DirectX
     }
 }
 
-using namespace DirectX;
-using namespace DirectX::SimpleMath;
+using namespace DirectX12;
+using namespace DirectX12::SimpleMath;
 
 /****************************************************************************
  *
@@ -161,13 +161,13 @@ static_assert(offsetof(DirectX::SimpleMath::Viewport, maxDepth) == offsetof(D3D1
 #endif
 
 #if defined(__d3d12_h__) || defined(__d3d12_x_h__) || defined(__XBOX_D3D12_X__)
-static_assert(sizeof(DirectX::SimpleMath::Viewport) == sizeof(D3D12_VIEWPORT), "Size mismatch");
-static_assert(offsetof(DirectX::SimpleMath::Viewport, x) == offsetof(D3D12_VIEWPORT, TopLeftX), "Layout mismatch");
-static_assert(offsetof(DirectX::SimpleMath::Viewport, y) == offsetof(D3D12_VIEWPORT, TopLeftY), "Layout mismatch");
-static_assert(offsetof(DirectX::SimpleMath::Viewport, width) == offsetof(D3D12_VIEWPORT, Width), "Layout mismatch");
-static_assert(offsetof(DirectX::SimpleMath::Viewport, height) == offsetof(D3D12_VIEWPORT, Height), "Layout mismatch");
-static_assert(offsetof(DirectX::SimpleMath::Viewport, minDepth) == offsetof(D3D12_VIEWPORT, MinDepth), "Layout mismatch");
-static_assert(offsetof(DirectX::SimpleMath::Viewport, maxDepth) == offsetof(D3D12_VIEWPORT, MaxDepth), "Layout mismatch");
+static_assert(sizeof(DirectX12::SimpleMath::Viewport) == sizeof(D3D12_VIEWPORT), "Size mismatch");
+static_assert(offsetof(DirectX12::SimpleMath::Viewport, x) == offsetof(D3D12_VIEWPORT, TopLeftX), "Layout mismatch");
+static_assert(offsetof(DirectX12::SimpleMath::Viewport, y) == offsetof(D3D12_VIEWPORT, TopLeftY), "Layout mismatch");
+static_assert(offsetof(DirectX12::SimpleMath::Viewport, width) == offsetof(D3D12_VIEWPORT, Width), "Layout mismatch");
+static_assert(offsetof(DirectX12::SimpleMath::Viewport, height) == offsetof(D3D12_VIEWPORT, Height), "Layout mismatch");
+static_assert(offsetof(DirectX12::SimpleMath::Viewport, minDepth) == offsetof(D3D12_VIEWPORT, MinDepth), "Layout mismatch");
+static_assert(offsetof(DirectX12::SimpleMath::Viewport, maxDepth) == offsetof(D3D12_VIEWPORT, MaxDepth), "Layout mismatch");
 #endif
 
 #if defined(__dxgi1_2_h__) || defined(__d3d11_x_h__) || defined(__d3d12_x_h__) || defined(__XBOX_D3D12_X__)

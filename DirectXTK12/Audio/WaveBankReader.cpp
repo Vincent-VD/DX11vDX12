@@ -422,7 +422,7 @@ static_assert(sizeof(ENTRY) == 24, "Mismatch with xact3wb.h");
 static_assert(sizeof(ENTRYCOMPACT) == 4, "Mismatch with xact3wb.h");
 static_assert(sizeof(BANKDATA) == 96, "Mismatch with xact3wb.h");
 
-using namespace DirectX;
+using namespace DirectX12;
 
 //--------------------------------------------------------------------------------------
 class WaveBankReader::Impl

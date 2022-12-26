@@ -10,7 +10,7 @@
 #include "pch.h"
 #include "EffectCommon.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 
 namespace
 {

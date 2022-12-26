@@ -16,7 +16,7 @@
 #include "PlatformHelpers.h"
 
 
-namespace DirectX
+namespace DirectX12
 {
     // Pool manager ensures that only a single TData instance is created for each unique TKey.
     // This is used to avoid duplicate resource creation, so that for instance a caller can

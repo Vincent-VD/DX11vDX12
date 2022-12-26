@@ -11,7 +11,7 @@
 #include "pch.h"
 #include "SoundCommon.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 
 
 //======================================================================================

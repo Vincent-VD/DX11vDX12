@@ -29,7 +29,7 @@
 #include "GraphicsMemory.h"
 
 
-namespace DirectX
+namespace DirectX12
 {
     // Has a command list of it's own so it can upload at any time.
     class ResourceUploadBatch

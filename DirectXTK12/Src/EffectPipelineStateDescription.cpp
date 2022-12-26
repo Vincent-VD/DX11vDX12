@@ -14,7 +14,7 @@
 #include "PlatformHelpers.h"
 
 
-using namespace DirectX;
+using namespace DirectX12;
 
 namespace
 {

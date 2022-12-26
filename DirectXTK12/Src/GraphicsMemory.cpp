@@ -12,7 +12,7 @@
 #include "PlatformHelpers.h"
 #include "LinearAllocator.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 using ScopedLock = std::lock_guard<std::mutex>;
 

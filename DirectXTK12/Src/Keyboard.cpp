@@ -13,7 +13,7 @@
 
 #include "PlatformHelpers.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 static_assert(sizeof(Keyboard::State) == (256 / 8), "Size mismatch for State");

@@ -13,8 +13,8 @@
 #include "PlatformHelpers.h"
 #include "GraphicsMemory.h"
 
-using namespace DirectX;
-using namespace DirectX::DX12::Private;
+using namespace DirectX12;
+using namespace DirectX12::DX12::Private;
 using Microsoft::WRL::ComPtr;
 
 

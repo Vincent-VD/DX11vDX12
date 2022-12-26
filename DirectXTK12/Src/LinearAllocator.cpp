@@ -19,7 +19,7 @@
 #   include <unordered_set>
 #endif
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 LinearAllocatorPage::LinearAllocatorPage() noexcept

@@ -46,7 +46,7 @@
 #include "Effects.h"
 
 
-namespace DirectX
+namespace DirectX12
 {
     inline namespace DX12
     {

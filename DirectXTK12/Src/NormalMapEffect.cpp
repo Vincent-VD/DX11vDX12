@@ -10,7 +10,7 @@
 #include "pch.h"
 #include "EffectCommon.h"
 
-namespace DirectX
+namespace DirectX12
 {
     namespace EffectDirtyFlags
     {
@@ -18,7 +18,7 @@ namespace DirectX
     }
 }
 
-using namespace DirectX;
+using namespace DirectX12;
 
 namespace
 {

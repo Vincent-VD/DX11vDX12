@@ -29,9 +29,9 @@ namespace Bezier
     }
 
     template<>
-    inline DirectX::XMVECTOR CubicInterpolate(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t) noexcept
+    inline DirectX12::XMVECTOR CubicInterpolate(DirectX12::XMVECTOR const& p1, DirectX12::XMVECTOR const& p2, DirectX12::XMVECTOR const& p3, DirectX12::XMVECTOR const& p4, float t) noexcept
     {
-        using namespace DirectX;
+        using namespace DirectX12;
 
         const XMVECTOR T0 = XMVectorReplicate((1 - t) * (1 - t) * (1 - t));
         const XMVECTOR T1 = XMVectorReplicate(3 * t * (1 - t) * (1 - t));
@@ -58,9 +58,9 @@ namespace Bezier
     }
 
     template<>
-    inline DirectX::XMVECTOR CubicTangent(DirectX::XMVECTOR const& p1, DirectX::XMVECTOR const& p2, DirectX::XMVECTOR const& p3, DirectX::XMVECTOR const& p4, float t) noexcept
+    inline DirectX12::XMVECTOR CubicTangent(DirectX12::XMVECTOR const& p1, DirectX12::XMVECTOR const& p2, DirectX12::XMVECTOR const& p3, DirectX12::XMVECTOR const& p4, float t) noexcept
     {
-        using namespace DirectX;
+        using namespace DirectX12;
 
         const XMVECTOR T0 = XMVectorReplicate(-1 + 2 * t - t * t);
         const XMVECTOR T1 = XMVectorReplicate(1 - 4 * t + 3 * t * t);
@@ -80,9 +80,9 @@ namespace Bezier
     // Calls the specified outputVertex function for each generated vertex,
     // passing the position, normal, and texture coordinate as parameters.
     template<typename TOutputFunc>
-    void CreatePatchVertices(_In_reads_(16) const DirectX::XMVECTOR patch[16], size_t tessellation, bool isMirrored, TOutputFunc outputVertex)
+    void CreatePatchVertices(_In_reads_(16) const DirectX12::XMVECTOR patch[16], size_t tessellation, bool isMirrored, TOutputFunc outputVertex)
     {
-        using namespace DirectX;
+        using namespace DirectX12;
 
         for (size_t i = 0; i <= tessellation; i++)
         {

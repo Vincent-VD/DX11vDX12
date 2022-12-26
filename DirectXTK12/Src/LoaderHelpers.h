@@ -17,7 +17,7 @@
 #include "PlatformHelpers.h"
 
 
-namespace DirectX
+namespace DirectX12
 {
     namespace LoaderHelpers
     {
@@ -936,7 +936,7 @@ namespace DirectX
     #undef ISBITMASK
 
         //--------------------------------------------------------------------------------------
-        inline DirectX::DDS_ALPHA_MODE GetAlphaMode(_In_ const DDS_HEADER* header) noexcept
+        inline DirectX12::DDS_ALPHA_MODE GetAlphaMode(_In_ const DDS_HEADER* header) noexcept
         {
             if (header->ddspf.flags & DDS_FOURCC)
             {

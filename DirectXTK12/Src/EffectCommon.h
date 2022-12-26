@@ -26,7 +26,7 @@
 // combinations to build up whatever subset is needed by each effect.
 
 
-namespace DirectX
+namespace DirectX12
 {
     inline namespace DX12
     {

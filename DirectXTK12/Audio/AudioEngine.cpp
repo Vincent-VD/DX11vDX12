@@ -14,7 +14,7 @@
 
 #include <unordered_map>
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 //#define VERBOSE_TRACE

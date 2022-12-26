@@ -12,7 +12,7 @@
 #include "DirectXHelpers.h"
 #include "DescriptorHeap.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 
 // --------------------------------------------------------------------------
 // Blend States

@@ -10,7 +10,7 @@
 #include "pch.h"
 #include "VertexTypes.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 
 //--------------------------------------------------------------------------------------
 // Vertex struct holding position information.

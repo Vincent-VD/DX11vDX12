@@ -23,7 +23,7 @@
 #include <cstddef>
 
 
-namespace DirectX
+namespace DirectX12
 {
     class ResourceUploadBatch;
 

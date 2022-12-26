@@ -23,8 +23,8 @@
 #include "LoaderHelpers.h"
 #include "ResourceUploadBatch.h"
 
-using namespace DirectX;
-using namespace DirectX::LoaderHelpers;
+using namespace DirectX12;
+using namespace DirectX12::LoaderHelpers;
 
 static_assert(static_cast<int>(DDS_DIMENSION_TEXTURE1D) == static_cast<int>(D3D12_RESOURCE_DIMENSION_TEXTURE1D), "dds mismatch");
 static_assert(static_cast<int>(DDS_DIMENSION_TEXTURE2D) == static_cast<int>(D3D12_RESOURCE_DIMENSION_TEXTURE2D), "dds mismatch");
@@ -592,7 +592,7 @@ namespace
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::LoadDDSTextureFromMemory(
+HRESULT DirectX12::LoadDDSTextureFromMemory(
     ID3D12Device* d3dDevice,
     const uint8_t* ddsData,
     size_t ddsDataSize,
@@ -617,7 +617,7 @@ HRESULT DirectX::LoadDDSTextureFromMemory(
 
 
 _Use_decl_annotations_
-HRESULT DirectX::LoadDDSTextureFromMemoryEx(
+HRESULT DirectX12::LoadDDSTextureFromMemoryEx(
     ID3D12Device* d3dDevice,
     const uint8_t* ddsData,
     size_t ddsDataSize,
@@ -681,7 +681,7 @@ HRESULT DirectX::LoadDDSTextureFromMemoryEx(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::LoadDDSTextureFromFile(
+HRESULT DirectX12::LoadDDSTextureFromFile(
     ID3D12Device* d3dDevice,
     const wchar_t* fileName,
     ID3D12Resource** texture,
@@ -705,7 +705,7 @@ HRESULT DirectX::LoadDDSTextureFromFile(
 }
 
 _Use_decl_annotations_
-HRESULT DirectX::LoadDDSTextureFromFileEx(
+HRESULT DirectX12::LoadDDSTextureFromFileEx(
     ID3D12Device* d3dDevice,
     const wchar_t* fileName,
     size_t maxsize,
@@ -768,7 +768,7 @@ HRESULT DirectX::LoadDDSTextureFromFileEx(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::CreateDDSTextureFromMemory(
+HRESULT DirectX12::CreateDDSTextureFromMemory(
     ID3D12Device* d3dDevice,
     ResourceUploadBatch& resourceUpload,
     const uint8_t* ddsData,
@@ -794,7 +794,7 @@ HRESULT DirectX::CreateDDSTextureFromMemory(
 
 
 _Use_decl_annotations_
-HRESULT DirectX::CreateDDSTextureFromMemoryEx(
+HRESULT DirectX12::CreateDDSTextureFromMemoryEx(
     ID3D12Device* d3dDevice,
     ResourceUploadBatch& resourceUpload,
     const uint8_t* ddsData,
@@ -894,7 +894,7 @@ HRESULT DirectX::CreateDDSTextureFromMemoryEx(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::CreateDDSTextureFromFile(
+HRESULT DirectX12::CreateDDSTextureFromFile(
     ID3D12Device* d3dDevice,
     ResourceUploadBatch& resourceUpload,
     const wchar_t* fileName,
@@ -917,7 +917,7 @@ HRESULT DirectX::CreateDDSTextureFromFile(
 }
 
 _Use_decl_annotations_
-HRESULT DirectX::CreateDDSTextureFromFileEx(
+HRESULT DirectX12::CreateDDSTextureFromFileEx(
     ID3D12Device* d3dDevice,
     ResourceUploadBatch& resourceUpload,
     const wchar_t* fileName,

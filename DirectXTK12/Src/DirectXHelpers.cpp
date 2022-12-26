@@ -12,10 +12,10 @@
 #include "GraphicsMemory.h"
 #include "PlatformHelpers.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 
 _Use_decl_annotations_
-void DirectX::CreateShaderResourceView(
+void DirectX12::CreateShaderResourceView(
     ID3D12Device* device,
     ID3D12Resource* tex,
     D3D12_CPU_DESCRIPTOR_HANDLE srvDescriptor,
@@ -103,7 +103,7 @@ void DirectX::CreateShaderResourceView(
 }
 
 _Use_decl_annotations_
-void DirectX::CreateUnorderedAccessView(
+void DirectX12::CreateUnorderedAccessView(
     ID3D12Device* device,
     ID3D12Resource* tex,
     D3D12_CPU_DESCRIPTOR_HANDLE uavDescriptor,
@@ -176,7 +176,7 @@ void DirectX::CreateUnorderedAccessView(
 }
 
 _Use_decl_annotations_
-void DirectX::CreateRenderTargetView(
+void DirectX12::CreateRenderTargetView(
     ID3D12Device* device,
     ID3D12Resource* tex,
     D3D12_CPU_DESCRIPTOR_HANDLE rtvDescriptor,
@@ -261,7 +261,7 @@ void DirectX::CreateRenderTargetView(
 }
 
 _Use_decl_annotations_
-void DirectX::CreateBufferShaderResourceView(
+void DirectX12::CreateBufferShaderResourceView(
     ID3D12Device* device,
     ID3D12Resource* buffer,
     D3D12_CPU_DESCRIPTOR_HANDLE srvDescriptor,
@@ -295,7 +295,7 @@ void DirectX::CreateBufferShaderResourceView(
 }
 
 _Use_decl_annotations_
-void DirectX::CreateBufferUnorderedAccessView(
+void DirectX12::CreateBufferUnorderedAccessView(
     ID3D12Device* device,
     ID3D12Resource* buffer,
     D3D12_CPU_DESCRIPTOR_HANDLE uavDescriptor,

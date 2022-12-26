@@ -15,12 +15,12 @@
 #include "PlatformHelpers.h"
 
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::CreateStaticBuffer(
+HRESULT DirectX12::CreateStaticBuffer(
     ID3D12Device* device,
     ResourceUploadBatch& resourceUpload,
     const void* ptr,
@@ -88,7 +88,7 @@ HRESULT DirectX::CreateStaticBuffer(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::CreateTextureFromMemory(
+HRESULT DirectX12::CreateTextureFromMemory(
     ID3D12Device* device,
     ResourceUploadBatch& resourceUpload,
     size_t width,
@@ -150,7 +150,7 @@ HRESULT DirectX::CreateTextureFromMemory(
 }
 
 _Use_decl_annotations_
-HRESULT DirectX::CreateTextureFromMemory(
+HRESULT DirectX12::CreateTextureFromMemory(
     ID3D12Device* device,
     ResourceUploadBatch& resourceUpload,
     size_t width,
@@ -233,7 +233,7 @@ HRESULT DirectX::CreateTextureFromMemory(
 
 
 _Use_decl_annotations_
-HRESULT DirectX::CreateTextureFromMemory(
+HRESULT DirectX12::CreateTextureFromMemory(
     ID3D12Device* device,
     ResourceUploadBatch& resourceUpload,
     size_t width, size_t height, size_t depth,

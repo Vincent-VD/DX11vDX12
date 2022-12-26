@@ -25,7 +25,7 @@
 #define DIRECTX_ENABLE_SEEK_TABLES
 #endif
 
-namespace DirectX
+namespace DirectX12
 {
     // Helper for getting a format tag from a WAVEFORMATEX
     inline uint32_t GetFormatTag(const WAVEFORMATEX* wfx) noexcept

@@ -41,7 +41,7 @@ namespace ABI { namespace Windows { namespace UI { namespace Core { struct ICore
 #endif
 
 
-namespace DirectX
+namespace DirectX12
 {
     class Keyboard
     {

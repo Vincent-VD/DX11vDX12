@@ -30,8 +30,8 @@
 #include "LoaderHelpers.h"
 
 using Microsoft::WRL::ComPtr;
-using namespace DirectX;
-using namespace DirectX::LoaderHelpers;
+using namespace DirectX12;
+using namespace DirectX12::LoaderHelpers;
 
 namespace
 {
@@ -220,7 +220,7 @@ namespace
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::SaveDDSTextureToFile(
+HRESULT DirectX12::SaveDDSTextureToFile(
     ID3D12CommandQueue* pCommandQ,
     ID3D12Resource* pSource,
     const wchar_t* fileName,
@@ -433,7 +433,7 @@ HRESULT DirectX::SaveDDSTextureToFile(
 }
 
 //--------------------------------------------------------------------------------------
-namespace DirectX
+namespace DirectX12
 {
     inline namespace DX12
     {
@@ -445,7 +445,7 @@ namespace DirectX
 }
 
 _Use_decl_annotations_
-HRESULT DirectX::SaveWICTextureToFile(
+HRESULT DirectX12::SaveWICTextureToFile(
     ID3D12CommandQueue* pCommandQ,
     ID3D12Resource* pSource,
     REFGUID guidContainerFormat,
@@ -456,7 +456,7 @@ HRESULT DirectX::SaveWICTextureToFile(
     std::function<void(IPropertyBag2*)> setCustomProps,
     bool forceSRGB)
 {
-    using namespace DirectX::DX12::Internal;
+    using namespace DirectX12::DX12::Internal;
 
     if (!fileName)
         return E_INVALIDARG;

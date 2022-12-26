@@ -31,7 +31,7 @@
 #include "EffectPipelineStateDescription.h"
 
 
-namespace DirectX
+namespace DirectX12
 {
     class DescriptorHeap;
     class ResourceUploadBatch;

@@ -14,7 +14,7 @@
 #include "BinaryReader.h"
 #include "PlatformHelpers.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 
@@ -91,12 +91,12 @@ namespace VSD3DStarter
 
     struct Material
     {
-        DirectX::XMFLOAT4   Ambient;
-        DirectX::XMFLOAT4   Diffuse;
-        DirectX::XMFLOAT4   Specular;
+        DirectX12::XMFLOAT4   Ambient;
+        DirectX12::XMFLOAT4   Diffuse;
+        DirectX12::XMFLOAT4   Specular;
         float               SpecularPower;
-        DirectX::XMFLOAT4   Emissive;
-        DirectX::XMFLOAT4X4 UVTransform;
+        DirectX12::XMFLOAT4   Emissive;
+        DirectX12::XMFLOAT4X4 UVTransform;
     };
 
     constexpr uint32_t MAX_TEXTURE = 8;
@@ -130,9 +130,9 @@ namespace VSD3DStarter
     struct Bone
     {
         int32_t ParentIndex;
-        DirectX::XMFLOAT4X4 InvBindPos;
-        DirectX::XMFLOAT4X4 BindPos;
-        DirectX::XMFLOAT4X4 LocalTransform;
+        DirectX12::XMFLOAT4X4 InvBindPos;
+        DirectX12::XMFLOAT4X4 BindPos;
+        DirectX12::XMFLOAT4X4 LocalTransform;
     };
 
     struct Clip
@@ -146,7 +146,7 @@ namespace VSD3DStarter
     {
         uint32_t BoneIndex;
         float Time;
-        DirectX::XMFLOAT4X4 Transform;
+        DirectX12::XMFLOAT4X4 Transform;
     };
 
 #pragma pack(pop)
@@ -238,7 +238,7 @@ namespace
         void SetBlendWeights(XMFLOAT4 const& iweights) noexcept { SetBlendWeights(XMLoadFloat4(&iweights)); }
         void XM_CALLCONV SetBlendWeights(FXMVECTOR iweights) noexcept
         {
-            using namespace DirectX::PackedVector;
+            using namespace DirectX12::PackedVector;
 
             XMUBYTEN4 packed;
             XMStoreUByteN4(&packed, iweights);
@@ -333,7 +333,7 @@ namespace
 //======================================================================================
 
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
+std::unique_ptr<Model> DirectX12::Model::CreateFromCMO(
     ID3D12Device* device,
     const uint8_t* meshData, size_t dataSize,
     ModelLoaderFlags flags,
@@ -971,7 +971,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromCMO(
+std::unique_ptr<Model> DirectX12::Model::CreateFromCMO(
     ID3D12Device* device,
     const wchar_t* szFileName,
     ModelLoaderFlags flags,

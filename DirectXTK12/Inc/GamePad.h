@@ -57,7 +57,7 @@ interface IGameInputDevice;
 #endif
 
 
-namespace DirectX
+namespace DirectX12
 {
     class GamePad
     {

@@ -19,7 +19,7 @@
 #include "SharedResourcePool.h"
 #include "VertexTypes.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 namespace

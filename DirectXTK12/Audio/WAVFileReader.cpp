@@ -14,7 +14,7 @@
 #include "PlatformHelpers.h"
 #include "WAVFileReader.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 
 
 namespace
@@ -547,7 +547,7 @@ namespace
 
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::LoadWAVAudioInMemory(
+HRESULT DirectX12::LoadWAVAudioInMemory(
     const uint8_t* wavData,
     size_t wavDataSize,
     const WAVEFORMATEX** wfx,
@@ -578,7 +578,7 @@ HRESULT DirectX::LoadWAVAudioInMemory(
 
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::LoadWAVAudioFromFile(
+HRESULT DirectX12::LoadWAVAudioFromFile(
     const wchar_t* szFileName,
     std::unique_ptr<uint8_t[]>& wavData,
     const WAVEFORMATEX** wfx,
@@ -610,10 +610,10 @@ HRESULT DirectX::LoadWAVAudioFromFile(
 
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::LoadWAVAudioInMemoryEx(
+HRESULT DirectX12::LoadWAVAudioInMemoryEx(
     const uint8_t* wavData,
     size_t wavDataSize,
-    DirectX::WAVData& result) noexcept
+    DirectX12::WAVData& result) noexcept
 {
     if (!wavData)
         return E_INVALIDARG;
@@ -654,10 +654,10 @@ HRESULT DirectX::LoadWAVAudioInMemoryEx(
 
 //-------------------------------------------------------------------------------------
 _Use_decl_annotations_
-HRESULT DirectX::LoadWAVAudioFromFileEx(
+HRESULT DirectX12::LoadWAVAudioFromFileEx(
     const wchar_t* szFileName,
     std::unique_ptr<uint8_t[]>& wavData,
-    DirectX::WAVData& result) noexcept
+    DirectX12::WAVData& result) noexcept
 {
     if (!szFileName)
         return E_INVALIDARG;

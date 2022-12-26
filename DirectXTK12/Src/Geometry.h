@@ -10,9 +10,9 @@
 
 #include "VertexTypes.h"
 
-namespace DirectX
+namespace DirectX12
 {
-    using VertexCollection = std::vector<DirectX::VertexPositionNormalTexture>;
+    using VertexCollection = std::vector<DirectX12::VertexPositionNormalTexture>;
     using IndexCollection = std::vector<uint16_t>;
 
     void ComputeBox(VertexCollection& vertices, IndexCollection& indices, const XMFLOAT3& size, bool rhcoords, bool invertn);

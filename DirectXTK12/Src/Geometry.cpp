@@ -12,7 +12,7 @@
 #include "Geometry.h"
 #include "Bezier.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 
 namespace
 {
@@ -68,7 +68,7 @@ namespace
 //--------------------------------------------------------------------------------------
 // Cube (aka a Hexahedron) or Box
 //--------------------------------------------------------------------------------------
-void DirectX::ComputeBox(VertexCollection& vertices, IndexCollection& indices, const XMFLOAT3& size, bool rhcoords, bool invertn)
+void DirectX12::ComputeBox(VertexCollection& vertices, IndexCollection& indices, const XMFLOAT3& size, bool rhcoords, bool invertn)
 {
     vertices.clear();
     indices.clear();
@@ -144,7 +144,7 @@ void DirectX::ComputeBox(VertexCollection& vertices, IndexCollection& indices, c
 //--------------------------------------------------------------------------------------
 // Sphere
 //--------------------------------------------------------------------------------------
-void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices, float diameter, size_t tessellation, bool rhcoords, bool invertn)
+void DirectX12::ComputeSphere(VertexCollection& vertices, IndexCollection& indices, float diameter, size_t tessellation, bool rhcoords, bool invertn)
 {
     vertices.clear();
     indices.clear();
@@ -219,7 +219,7 @@ void DirectX::ComputeSphere(VertexCollection& vertices, IndexCollection& indices
 //--------------------------------------------------------------------------------------
 // Geodesic sphere
 //--------------------------------------------------------------------------------------
-void DirectX::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indices, float diameter, size_t tessellation, bool rhcoords)
+void DirectX12::ComputeGeoSphere(VertexCollection& vertices, IndexCollection& indices, float diameter, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -609,7 +609,7 @@ namespace
     }
 }
 
-void DirectX::ComputeCylinder(VertexCollection& vertices, IndexCollection& indices, float height, float diameter, size_t tessellation, bool rhcoords)
+void DirectX12::ComputeCylinder(VertexCollection& vertices, IndexCollection& indices, float height, float diameter, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -658,7 +658,7 @@ void DirectX::ComputeCylinder(VertexCollection& vertices, IndexCollection& indic
 
 
 // Creates a cone primitive.
-void DirectX::ComputeCone(VertexCollection& vertices, IndexCollection& indices, float diameter, float height, size_t tessellation, bool rhcoords)
+void DirectX12::ComputeCone(VertexCollection& vertices, IndexCollection& indices, float diameter, float height, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -712,7 +712,7 @@ void DirectX::ComputeCone(VertexCollection& vertices, IndexCollection& indices, 
 //--------------------------------------------------------------------------------------
 // Torus
 //--------------------------------------------------------------------------------------
-void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices, float diameter, float thickness, size_t tessellation, bool rhcoords)
+void DirectX12::ComputeTorus(VertexCollection& vertices, IndexCollection& indices, float diameter, float thickness, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -776,7 +776,7 @@ void DirectX::ComputeTorus(VertexCollection& vertices, IndexCollection& indices,
 //--------------------------------------------------------------------------------------
 // Tetrahedron
 //--------------------------------------------------------------------------------------
-void DirectX::ComputeTetrahedron(VertexCollection& vertices, IndexCollection& indices, float size, bool rhcoords)
+void DirectX12::ComputeTetrahedron(VertexCollection& vertices, IndexCollection& indices, float size, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -836,7 +836,7 @@ void DirectX::ComputeTetrahedron(VertexCollection& vertices, IndexCollection& in
 //--------------------------------------------------------------------------------------
 // Octahedron
 //--------------------------------------------------------------------------------------
-void DirectX::ComputeOctahedron(VertexCollection& vertices, IndexCollection& indices, float size, bool rhcoords)
+void DirectX12::ComputeOctahedron(VertexCollection& vertices, IndexCollection& indices, float size, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -902,7 +902,7 @@ void DirectX::ComputeOctahedron(VertexCollection& vertices, IndexCollection& ind
 //--------------------------------------------------------------------------------------
 // Dodecahedron
 //--------------------------------------------------------------------------------------
-void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& indices, float size, bool rhcoords)
+void DirectX12::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& indices, float size, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -1033,7 +1033,7 @@ void DirectX::ComputeDodecahedron(VertexCollection& vertices, IndexCollection& i
 //--------------------------------------------------------------------------------------
 // Icosahedron
 //--------------------------------------------------------------------------------------
-void DirectX::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& indices, float size, bool rhcoords)
+void DirectX12::ComputeIcosahedron(VertexCollection& vertices, IndexCollection& indices, float size, bool rhcoords)
 {
     vertices.clear();
     indices.clear();
@@ -1154,7 +1154,7 @@ namespace
 
 
 // Creates a teapot primitive.
-void DirectX::ComputeTeapot(VertexCollection& vertices, IndexCollection& indices, float size, size_t tessellation, bool rhcoords)
+void DirectX12::ComputeTeapot(VertexCollection& vertices, IndexCollection& indices, float size, size_t tessellation, bool rhcoords)
 {
     vertices.clear();
     indices.clear();

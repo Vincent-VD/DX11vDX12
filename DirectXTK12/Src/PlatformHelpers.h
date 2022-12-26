@@ -32,7 +32,7 @@
 #endif
 #endif
 
-namespace DirectX
+namespace DirectX12
 {
     // Helper class for COM exceptions
     class com_exception : public std::exception

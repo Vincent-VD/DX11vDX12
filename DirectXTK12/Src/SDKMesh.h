@@ -232,8 +232,8 @@ namespace DXUT
         uint32_t NumSubsets;
         uint32_t NumFrameInfluences; //aka bones
 
-        DirectX::XMFLOAT3 BoundingBoxCenter;
-        DirectX::XMFLOAT3 BoundingBoxExtents;
+        DirectX12::XMFLOAT3 BoundingBoxCenter;
+        DirectX12::XMFLOAT3 BoundingBoxExtents;
 
         union
         {
@@ -265,7 +265,7 @@ namespace DXUT
         uint32_t ParentFrame;
         uint32_t ChildFrame;
         uint32_t SiblingFrame;
-        DirectX::XMFLOAT4X4 Matrix;
+        DirectX12::XMFLOAT4X4 Matrix;
         uint32_t AnimationDataIndex; //Used to index which set of keyframes transforms this frame
     };
 
@@ -281,10 +281,10 @@ namespace DXUT
         char    NormalTexture[MAX_TEXTURE_NAME];
         char    SpecularTexture[MAX_TEXTURE_NAME];
 
-        DirectX::XMFLOAT4 Diffuse;
-        DirectX::XMFLOAT4 Ambient;
-        DirectX::XMFLOAT4 Specular;
-        DirectX::XMFLOAT4 Emissive;
+        DirectX12::XMFLOAT4 Diffuse;
+        DirectX12::XMFLOAT4 Ambient;
+        DirectX12::XMFLOAT4 Specular;
+        DirectX12::XMFLOAT4 Emissive;
         float Power;
 
         uint64_t Force64_1;
@@ -331,9 +331,9 @@ namespace DXUT
 
     struct SDKANIMATION_DATA
     {
-        DirectX::XMFLOAT3 Translation;
-        DirectX::XMFLOAT4 Orientation;
-        DirectX::XMFLOAT3 Scaling;
+        DirectX12::XMFLOAT3 Translation;
+        DirectX12::XMFLOAT4 Orientation;
+        DirectX12::XMFLOAT3 Scaling;
     };
 
     struct SDKANIMATION_FRAME_DATA

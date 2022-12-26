@@ -64,7 +64,7 @@
 #include <DirectXMath.h>
 
 
-namespace DirectX
+namespace DirectX12
 {
     class SoundEffectInstance;
     class SoundStreamInstance;

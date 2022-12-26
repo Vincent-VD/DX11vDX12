@@ -21,7 +21,7 @@
 
 #include "SDKMesh.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 namespace
@@ -376,7 +376,7 @@ namespace
 //======================================================================================
 
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
+std::unique_ptr<Model> DirectX12::Model::CreateFromSDKMESH(
     ID3D12Device* device,
     const uint8_t* meshData,
     size_t idataSize,
@@ -772,7 +772,7 @@ std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
 
 //--------------------------------------------------------------------------------------
 _Use_decl_annotations_
-std::unique_ptr<Model> DirectX::Model::CreateFromSDKMESH(
+std::unique_ptr<Model> DirectX12::Model::CreateFromSDKMESH(
     ID3D12Device* device,
     const wchar_t* szFileName,
     ModelLoaderFlags flags)

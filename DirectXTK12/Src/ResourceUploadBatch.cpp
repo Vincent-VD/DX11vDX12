@@ -14,7 +14,7 @@
 #include "LoaderHelpers.h"
 #include "PlatformHelpers.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 using Microsoft::WRL::ComPtr;
 
 #ifdef __MINGW32__

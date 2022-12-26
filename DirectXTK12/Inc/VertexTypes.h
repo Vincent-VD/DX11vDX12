@@ -23,7 +23,7 @@
 #include <DirectXMath.h>
 
 
-namespace DirectX
+namespace DirectX12
 {
     inline namespace DX12
     {

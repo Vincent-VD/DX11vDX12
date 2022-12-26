@@ -12,7 +12,7 @@
 
 #include "BinaryReader.h"
 
-using namespace DirectX;
+using namespace DirectX12;
 
 
 // Constructor reads from the filesystem.

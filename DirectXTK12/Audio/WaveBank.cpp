@@ -16,7 +16,7 @@
 
 #include <list>
 
-using namespace DirectX;
+using namespace DirectX12;
 
 
 //======================================================================================

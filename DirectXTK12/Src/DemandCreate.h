@@ -13,7 +13,7 @@
 #include "PlatformHelpers.h"
 
 
-namespace DirectX
+namespace DirectX12
 {
     // Helper for lazily creating a D3D resource.
     template<typename T, typename TCreateFunc>

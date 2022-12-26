@@ -19,7 +19,7 @@
 #include <memory>
 
 
-namespace DirectX
+namespace DirectX12
 {
     class WaveBankReader
     {

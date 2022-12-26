@@ -37,7 +37,7 @@
 #pragma comment(lib,"uuid.lib")
 
 
-namespace DirectX
+namespace DirectX12
 {
     inline namespace DX12
     {

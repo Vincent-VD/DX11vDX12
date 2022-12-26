@@ -23,7 +23,7 @@
 #include <shapexmacontext.h>
 #endif
 
-using namespace DirectX;
+using namespace DirectX12;
 
 
 //======================================================================================

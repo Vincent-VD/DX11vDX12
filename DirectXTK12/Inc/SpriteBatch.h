@@ -33,7 +33,7 @@
 #include "RenderTargetState.h"
 
 
-namespace DirectX
+namespace DirectX12
 {
     class ResourceUploadBatch;
 

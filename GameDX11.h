@@ -48,8 +48,10 @@ private:
 
 	using VertexType = DirectX::VertexPositionColor;
 
+	std::unique_ptr<DirectX::CommonStates> m_states;
 	std::unique_ptr<DirectX::BasicEffect> m_effect;
 	std::unique_ptr<DirectX::PrimitiveBatch<VertexType>> m_batch;
+	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout;
 
 	virtual void Update(DX::StepTimer const& timer) override;
 	virtual void Render() override;

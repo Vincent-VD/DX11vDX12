@@ -113,7 +113,7 @@
 //  CD3DX12FeatureSupport
 //
 
-namespace DirectX
+namespace DirectX12
 {
     constexpr D3D12_CPU_DESCRIPTOR_HANDLE D3D12_CPU_DESCRIPTOR_HANDLE_ZERO = {};
 
