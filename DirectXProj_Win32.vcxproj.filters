@@ -20,6 +20,9 @@
     <Filter Include="Includes">
       <UniqueIdentifier>{90fac1d3-b64a-49e0-9579-891fd7687ec7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Camera">
+      <UniqueIdentifier>{dd9d922f-0253-4136-992b-b89c64b865bf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -98,6 +101,10 @@
     <ClInclude Include="WICTextureLoader.h">
       <Filter>Includes</Filter>
     </ClInclude>
+    <ClInclude Include="ECamera.h">
+      <Filter>Camera</Filter>
+    </ClInclude>
+    <ClInclude Include="Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -116,6 +123,9 @@
     </ClCompile>
     <ClCompile Include="DeviceResourcesDX12.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="ECamera.cpp">
+      <Filter>Camera</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

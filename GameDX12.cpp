@@ -67,7 +67,7 @@ void GameDX12::Update(DX::StepTimer const& timer)
 {
     PIXBeginEvent(PIX_COLOR_DEFAULT, L"Update");
 
-    float elapsedTime = float(timer.GetElapsedSeconds());
+    const float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
     elapsedTime;
@@ -96,9 +96,9 @@ void GameDX12::Render()
 
     m_batch->Begin(commandList);
 
-    VertexPositionColor v1(Vector3(400.f, 150.f, 0.f), Colors::Red);
-    VertexPositionColor v2(Vector3(600.f, 450.f, 0.f), Colors::Green);
-    VertexPositionColor v3(Vector3(200.f, 450.f, 0.f), Colors::Blue);
+    VertexPositionColor v1(Vector3(400.f, 150.f, 0.f), Colors::Green);
+    VertexPositionColor v2(Vector3(600.f, 450.f, 0.f), Colors::Blue);
+    VertexPositionColor v3(Vector3(200.f, 450.f, 0.f), Colors::Red);
 
     m_batch->DrawTriangle(v1, v2, v3);
 

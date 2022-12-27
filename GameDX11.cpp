@@ -59,12 +59,10 @@ void GameDX11::Tick()
 // Updates the world.
 void GameDX11::Update(DX::StepTimer const& timer)
 {
-    float elapsedTime = float(timer.GetElapsedSeconds());
+    const float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
-
-   
-	std::cout << timer.GetFramesPerSecond() << std::endl;
+    elapsedTime;
 }
 
 // Draws the scene.
