@@ -104,7 +104,6 @@
     <ClInclude Include="ECamera.h">
       <Filter>Camera</Filter>
     </ClInclude>
-    <ClInclude Include="Camera.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />

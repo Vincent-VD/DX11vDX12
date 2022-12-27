@@ -184,7 +184,6 @@
   <ItemGroup>
     <ClInclude Include="BaseGame.h" />
     <ClInclude Include="BufferHelpers.h" />
-    <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonStates.h" />
     <ClInclude Include="d3dx12.h" />
     <ClInclude Include="DDSTextureLoader.h" />
