@@ -7,6 +7,7 @@
 #include "BaseGame.h"
 #include "StepTimer.h"
 #include "DeviceResources.h"
+#include "DirectXTK11/Inc/SimpleMath.h"
 
 class GameDX11 : public BaseGame, DX::IDeviceNotify
 {
@@ -45,10 +46,13 @@ private:
 
 	using VertexType = DirectX11::VertexPositionColor;
 
+	DirectX11::SimpleMath::Matrix m_world;
+	DirectX11::SimpleMath::Matrix m_view;
+	DirectX11::SimpleMath::Matrix m_proj;
+
 	std::unique_ptr<DirectX11::CommonStates> m_states;
-	std::unique_ptr<DirectX11::BasicEffect> m_effect;
-	std::unique_ptr<DirectX11::DX11::PrimitiveBatch<VertexType>> m_batch;
-	Microsoft::WRL::ComPtr<ID3D11InputLayout> m_inputLayout; 
+	std::unique_ptr<DirectX11::IEffectFactory> m_fxFactory;
+	std::unique_ptr<DirectX11::Model> m_model;
 
 	virtual void Update(DX::StepTimer const& timer) override;
 	virtual void Render() override;

@@ -55,6 +55,7 @@ private:
 	std::unique_ptr<DirectX12::EffectTextureFactory> m_modelResources;
 	std::unique_ptr<DirectX12::Model> m_model;
 	DirectX12::Model::EffectCollection m_modelNormal;
+	DirectX12::Model::EffectCollection m_modelFog;
 
 	DirectX12::SimpleMath::Matrix m_world;
 	DirectX12::SimpleMath::Matrix m_view;

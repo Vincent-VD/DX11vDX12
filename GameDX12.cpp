@@ -68,11 +68,11 @@ void GameDX12::Update(DX::StepTimer const& timer)
 {
     PIXBeginEvent(PIX_COLOR_DEFAULT, L"Update");
 
-    const float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
+    //const float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
     const auto time = static_cast<float>(timer.GetTotalSeconds());
-    m_world = Matrix::CreateRotationZ(cosf(time) * 2.f);
+    m_world = Matrix::CreateRotationY(time * 2.f);
    /* Elite::Camera* camera{ Elite::Camera::GetInstance() };
     camera->Update(elapsedTime);*/
 
@@ -102,6 +102,8 @@ void GameDX12::Render()
     Model::UpdateEffectMatrices(m_modelNormal, m_world, m_view, m_proj);
 
     m_model->Draw(commandList, m_modelNormal.cbegin());
+
+    //m_model->Draw(commandList, m_modelNormal.cbegin());
 
     PIXEndEvent(commandList);
 
@@ -205,7 +207,38 @@ void GameDX12::CreateDeviceDependentResources()
         CommonStates::CullClockwise,
         rtState);
 
-    m_modelNormal = m_model->CreateEffects(*m_fxFactory, pd, pd);
+    EffectPipelineStateDescription pdAlpha(
+        nullptr,
+        CommonStates::NonPremultiplied,
+        CommonStates::DepthDefault,
+        CommonStates::CullClockwise,
+        rtState);
+
+    m_modelNormal = m_model->CreateEffects(*m_fxFactory, pd, pdAlpha);
+
+    m_fxFactory->EnableFogging(true);
+    m_fxFactory->EnablePerPixelLighting(true);
+    m_modelFog = m_model->CreateEffects(*m_fxFactory, pd, pd);
+
+    for (auto& effect : m_modelFog)
+    {
+        auto lights = dynamic_cast<IEffectLights*>(effect.get());
+        if (lights)
+        {
+            lights->SetLightEnabled(0, true);
+            lights->SetLightDiffuseColor(0, Colors::White);
+            lights->SetLightEnabled(1, false);
+            lights->SetLightEnabled(2, false);
+        }
+
+        auto fog = dynamic_cast<IEffectFog*>(effect.get());
+        if (fog)
+        {
+            fog->SetFogColor(Colors::White);
+            fog->SetFogStart(3.f);
+            fog->SetFogEnd(4.f);
+        }
+    }
 
     m_world = Matrix::Identity;
 
@@ -273,6 +306,7 @@ void GameDX12::OnDeviceLost()
     m_modelResources.reset();
     m_model.reset();
     m_modelNormal.clear();
+    m_modelFog.clear();
 }
 
 void GameDX12::OnDeviceRestored()

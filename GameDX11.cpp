@@ -63,8 +63,9 @@ void GameDX11::Update(DX::StepTimer const& timer)
     const float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
-    Elite::Camera* camera{ Elite::Camera::GetInstance() };
-    camera->Update(elapsedTime);
+    float time = float(timer.GetTotalSeconds());
+
+    m_world = Matrix::CreateRotationY(time * -2.f);
 }
 
 // Draws the scene.
@@ -82,23 +83,11 @@ void GameDX11::Render()
     auto context = m_deviceResources->GetD3DDeviceContext();
 
     // TODO: Add your rendering code here.
-    context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
+    /*context->OMSetBlendState(m_states->Opaque(), nullptr, 0xFFFFFFFF);
     context->OMSetDepthStencilState(m_states->DepthNone(), 0);
-    context->RSSetState(m_states->CullNone());
+    context->RSSetState(m_states->CullNone());*/
 
-    m_effect->Apply(context);
-
-    context->IASetInputLayout(m_inputLayout.Get());
-
-    m_batch->Begin();
-
-    VertexPositionColor v1(Vector3(400.f, 150.f, 0.f), Colors::Red);
-    VertexPositionColor v2(Vector3(600.f, 450.f, 0.f), Colors::Green);
-    VertexPositionColor v3(Vector3(200.f, 450.f, 0.f), Colors::Blue);
-
-    m_batch->DrawTriangle(v1, v2, v3);
-
-    m_batch->End();
+    m_model->Draw(context, *m_states, m_world, m_view, m_proj);
 
     m_deviceResources->PIXEndEvent();
 
@@ -134,27 +123,23 @@ void GameDX11::CreateDeviceDependentResources()
     // TODO: Initialize device dependent objects here (independent of window size).
     m_states = std::make_unique<DirectX11::CommonStates>(device);
 
-    m_effect = std::make_unique<DirectX11::BasicEffect>(device);
-    m_effect->SetVertexColorEnabled(true);
+    m_states = std::make_unique<CommonStates>(device);
 
-    DX::ThrowIfFailed(
-        DirectX11::CreateInputLayoutFromEffect<VertexType>(device, m_effect.get(),
-            m_inputLayout.ReleaseAndGetAddressOf())
-    );
+    m_fxFactory = std::make_unique<EffectFactory>(device);
 
-    auto context = m_deviceResources->GetD3DDeviceContext();
-    m_batch = std::make_unique<DirectX11::PrimitiveBatch<VertexType>>(context);
+    m_model = Model::CreateFromSDKMESH(device, L"cup.sdkmesh", *m_fxFactory);
+
+    m_world = Matrix::Identity;
 }
 
 void GameDX11::CreateWindowSizeDependentResources()
 {
     // TODO: Initialize windows-size dependent objects here.
-    const auto size = m_deviceResources->GetOutputSize();
-
-    const Matrix proj = Matrix::CreateScale(2.f / static_cast<float>(size.right),
-        -2.f / static_cast<float>(size.bottom), 1.f)
-        * Matrix::CreateTranslation(-1.f, 1.f, 0.f);
-    m_effect->SetProjection(proj);
+    auto size = m_deviceResources->GetOutputSize();
+    m_view = Matrix::CreateLookAt(Vector3(2.f, 2.f, 2.f),
+        Vector3::Zero, Vector3::UnitY);
+    m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
+        float(size.right) / float(size.bottom), 0.1f, 10.f);
 }
 
 void GameDX11::OnActivated()
@@ -204,9 +189,9 @@ void GameDX11::OnDeviceLost()
 {
     // TODO: Add Direct3D resource cleanup here.
     m_states.reset();
-    m_effect.reset();
-    m_batch.reset();
-    m_inputLayout.Reset();
+    m_states.reset();
+    m_fxFactory.reset();
+    m_model.reset();
 }
 
 void GameDX11::OnDeviceRestored()
