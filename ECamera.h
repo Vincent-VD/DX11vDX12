@@ -38,13 +38,13 @@ namespace Elite
 
 		XMFLOAT3 GetPosition()
 		{
-			return m_Position;
+			return m_WorldPosition;
 		}
 
 		const float GetFov() const { return m_Fov; }
 
 	private:
-		Camera(const XMFLOAT3& position = { 0.f, 0.f, -10.f });
+		Camera(const XMFLOAT3& position = { 0.f, 0.f, -10.f }, const float width = 800.f, const float height = 600.f);
 		static Camera* m_Instance;
 
 		void CalculateLookAt();

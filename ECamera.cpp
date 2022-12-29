@@ -3,6 +3,15 @@
 #include <SDL_keyboard.h>
 #include <SDL_mouse.h>
 
+#ifdef DX11
+using namespace DirectX11;
+#endif
+
+#ifdef DX12
+using namespace  DirectX12;
+#endif
+
+
 namespace Elite
 {
 
@@ -27,7 +36,7 @@ namespace Elite
 		m_Instance = nullptr;
 	}
 
-	Camera::Camera(const XMFLOAT3& position) :
+	Camera::Camera(const XMFLOAT3& position, const float width, const float height) :
 		m_Fov(XM_PIDIV4),
 		m_Position{ position },
 		m_WorldPosition{ 0, 0, 0 },
@@ -35,10 +44,13 @@ namespace Elite
 		m_WorldRotation{ 0, 0, 0, 1 },
 		m_Forward{ 0, 0, 1 },
 		m_Right{ 1, 0, 0 },
-		m_Up{ 0, 1, 0 }
+		m_Up{ 0, 1, 0 },
+		m_FarPlane{ 2500.0f },
+		m_NearPlane{ 0.1f },
+		m_AspectRatio{ width / height }
 	{
 		//Calculate initial matrices based on given parameters (position & target)
-		CalculateLookAt();
+		//CalculateLookAt();
 	}
 
 	void Camera::Update(float elapsedSec)
@@ -84,7 +96,7 @@ namespace Elite
 		auto rot = XMLoadFloat4(&m_AbsoluteRotation);
 		auto world = XMMatrixScaling(1.f, 1.f, 1.f) *
 			XMMatrixRotationQuaternion(rot) *
-			XMMatrixTranslation(m_Position.x, m_Position.y, m_Position.z);
+			XMMatrixTranslation(m_RelativeTranslation.x, m_RelativeTranslation.y, m_RelativeTranslation.z);
 
 		XMStoreFloat4x4(&m_World, world);
 

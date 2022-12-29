@@ -5,6 +5,7 @@
 #include "pch.h"
 #include "GameDX11.h"
 
+#include "ECamera.h"
 #include "DirectXTK11/Inc/SimpleMath.h"
 
 extern void ExitGame() noexcept;
@@ -62,7 +63,8 @@ void GameDX11::Update(DX::StepTimer const& timer)
     const float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
-    elapsedTime;
+    Elite::Camera* camera{ Elite::Camera::GetInstance() };
+    camera->Update(elapsedTime);
 }
 
 // Draws the scene.

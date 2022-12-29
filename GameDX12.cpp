@@ -1,5 +1,6 @@
 #include "pch.h"
 #include "GameDX12.h"
+#include "ECamera.h"
 
 //
 // GameDX12.cpp
@@ -70,7 +71,10 @@ void GameDX12::Update(DX::StepTimer const& timer)
     const float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
-    elapsedTime;
+    const auto time = static_cast<float>(timer.GetTotalSeconds());
+    m_world = Matrix::CreateRotationZ(cosf(time) * 2.f);
+   /* Elite::Camera* camera{ Elite::Camera::GetInstance() };
+    camera->Update(elapsedTime);*/
 
     PIXEndEvent();
 }
@@ -92,17 +96,12 @@ void GameDX12::Render()
     PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Render");
 
     // TODO: Add your rendering code here.
-    m_effect->Apply(commandList);
+    ID3D12DescriptorHeap* heaps[] = { m_modelResources->Heap(), m_states->Heap() };
+    commandList->SetDescriptorHeaps(static_cast<UINT>(std::size(heaps)), heaps);
 
-    m_batch->Begin(commandList);
+    Model::UpdateEffectMatrices(m_modelNormal, m_world, m_view, m_proj);
 
-    VertexPositionColor v1(Vector3(400.f, 150.f, 0.f), Colors::Green);
-    VertexPositionColor v2(Vector3(600.f, 450.f, 0.f), Colors::Blue);
-    VertexPositionColor v3(Vector3(200.f, 450.f, 0.f), Colors::Red);
-
-    m_batch->DrawTriangle(v1, v2, v3);
-
-    m_batch->End();
+    m_model->Draw(commandList, m_modelNormal.cbegin());
 
     PIXEndEvent(commandList);
 
@@ -176,29 +175,50 @@ void GameDX12::CreateDeviceDependentResources()
     m_graphicsMemory = std::make_unique<DirectX12::GraphicsMemory>(device);
 
     // TODO: Initialize device dependent objects here (independent of window size).
-    m_batch = std::make_unique<PrimitiveBatch<VertexType>>(device);
+    m_states = std::make_unique<CommonStates>(device);
+
+    m_model = Model::CreateFromSDKMESH(device, L"cup.sdkmesh");
+
+    ResourceUploadBatch resourceUpload(device);
+
+    resourceUpload.Begin();
+
+    //Loads model to video memory
+    m_model->LoadStaticBuffers(device, resourceUpload);
+
+    m_modelResources = m_model->LoadTextures(device, resourceUpload);
+
+    m_fxFactory = std::make_unique<EffectFactory>(m_modelResources->Heap(), m_states->Heap());
+
+    auto uploadResourcesFinished = resourceUpload.End(
+        m_deviceResources->GetCommandQueue());
+
+    uploadResourcesFinished.wait();
 
     RenderTargetState rtState(m_deviceResources->GetBackBufferFormat(),
         m_deviceResources->GetDepthBufferFormat());
 
     EffectPipelineStateDescription pd(
-        &VertexType::InputLayout,
+        nullptr,
         CommonStates::Opaque,
         CommonStates::DepthDefault,
-        CommonStates::CullNone,
+        CommonStates::CullClockwise,
         rtState);
 
-    m_effect = std::make_unique<BasicEffect>(device, EffectFlags::VertexColor, pd);
+    m_modelNormal = m_model->CreateEffects(*m_fxFactory, pd, pd);
+
+    m_world = Matrix::Identity;
 
 }
 
 void GameDX12::CreateWindowSizeDependentResources()
-{const auto size = m_deviceResources->GetOutputSize();
+{
+    auto size = m_deviceResources->GetOutputSize();
 
-   const Matrix proj = Matrix::CreateScale(2.f / static_cast<float>(size.right),
-        -2.f / static_cast<float>(size.bottom), 1.f)
-        * Matrix::CreateTranslation(-1.f, 1.f, 0.f);
-    m_effect->SetProjection(proj);
+    m_view = Matrix::CreateLookAt(Vector3(2.f, 2.f, 2.f),
+        Vector3::Zero, Vector3::UnitY);
+    m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
+        static_cast<float>(size.right) / static_cast<float>(size.bottom), 0.1f, 10.f);
 }
 
 void GameDX12::OnActivated()
@@ -248,8 +268,11 @@ void GameDX12::OnDeviceLost()
 {
     // If using the DirectX Tool Kit for DX12, uncomment this line:
     m_graphicsMemory.reset();
-    m_effect.reset();
-    m_batch.reset();
+    m_states.reset();
+    m_fxFactory.reset();
+    m_modelResources.reset();
+    m_model.reset();
+    m_modelNormal.clear();
 }
 
 void GameDX12::OnDeviceRestored()

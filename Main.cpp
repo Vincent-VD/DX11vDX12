@@ -7,6 +7,7 @@
 #include <cstdio>
 
 #include "BaseGame.h"
+#include "ECamera.h"
 #include "GameDX11.h"
 #include "GameDX12.h"
 #include "resource.h"
@@ -113,6 +114,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		GetClientRect(hwnd, &rc);
 
 		g_game->Initialize(hwnd, rc.right - rc.left, rc.bottom - rc.top);
+
+#define DX11
+	
+		Elite::Camera::GetInstance()->SetAspectRatio(rc.right, rc.bottom);
+
 	}
 
 	// Main message loop
@@ -133,6 +139,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 	g_game.reset();
 
 	CoUninitialize();
+
 
 	return static_cast<int>(msg.wParam);
 }
@@ -183,6 +190,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		{
 
 		case ID_RENDERMODE_DIRECTX11:
+			#undef DX12
+			#define DX11
 			std::cout << "TEST\n";
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX11, MF_CHECKED);
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX12, MF_UNCHECKED);
@@ -193,6 +202,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(g_game.get()));
 			break;
 		case ID_RENDERMODE_DIRECTX12:
+			#undef DX11
+			#define DX12
 			std::cout << "TEST1\n";
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX11, MF_UNCHECKED);
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX12, MF_CHECKED);

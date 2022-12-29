@@ -50,9 +50,15 @@ private:
 
 	using VertexType = DirectX12::VertexPositionColor;
 
-	std::unique_ptr<DirectX12::BasicEffect> m_effect;
-	std::unique_ptr<DirectX12::PrimitiveBatch<VertexType>> m_batch;
+	std::unique_ptr<DirectX12::CommonStates> m_states;
+	std::unique_ptr<DirectX12::EffectFactory> m_fxFactory;
+	std::unique_ptr<DirectX12::EffectTextureFactory> m_modelResources;
+	std::unique_ptr<DirectX12::Model> m_model;
+	DirectX12::Model::EffectCollection m_modelNormal;
 
+	DirectX12::SimpleMath::Matrix m_world;
+	DirectX12::SimpleMath::Matrix m_view;
+	DirectX12::SimpleMath::Matrix m_proj;
 
 	virtual void Update(DX::StepTimer const& timer) override;
 	virtual void Render() override;

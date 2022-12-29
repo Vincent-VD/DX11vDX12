@@ -23,6 +23,9 @@
     <Filter Include="Camera">
       <UniqueIdentifier>{dd9d922f-0253-4136-992b-b89c64b865bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{e57a0da5-0bad-4b30-afd7-138f7706b080}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -104,6 +107,7 @@
     <ClInclude Include="ECamera.h">
       <Filter>Camera</Filter>
     </ClInclude>
+    <ClInclude Include="ObjParser.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -131,6 +135,9 @@
     <Image Include="directx.ico">
       <Filter>Assets</Filter>
     </Image>
+    <Image Include="files\cup.jpg">
+      <Filter>Objects</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <Manifest Include="settings.manifest">
@@ -141,5 +148,10 @@
     <ResourceCompile Include="DirectXProj_Win32.rc">
       <Filter>Resource</Filter>
     </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="files\cup.sdkmesh">
+      <Filter>Objects</Filter>
+    </None>
   </ItemGroup>
 </Project>
