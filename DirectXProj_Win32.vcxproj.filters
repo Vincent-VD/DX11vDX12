@@ -26,6 +26,9 @@
     <Filter Include="Objects">
       <UniqueIdentifier>{e57a0da5-0bad-4b30-afd7-138f7706b080}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ModelManager">
+      <UniqueIdentifier>{6dd031bf-da7e-4fb6-8721-b132e43dfdea}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -108,6 +111,9 @@
       <Filter>Camera</Filter>
     </ClInclude>
     <ClInclude Include="ObjParser.h" />
+    <ClInclude Include="ModelManager.h">
+      <Filter>ModelManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -129,6 +135,9 @@
     </ClCompile>
     <ClCompile Include="ECamera.cpp">
       <Filter>Camera</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelManager.cpp">
+      <Filter>ModelManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

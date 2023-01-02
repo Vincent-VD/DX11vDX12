@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "GameDX12.h"
 #include "ECamera.h"
+#include "ModelManager.h"
 
 //
 // GameDX12.cpp
@@ -73,6 +74,9 @@ void GameDX12::Update(DX::StepTimer const& timer)
     // TODO: Add your game logic here.
     const auto time = static_cast<float>(timer.GetTotalSeconds());
     m_world = Matrix::CreateRotationY(time * 2.f);
+
+    ModelManager::GetInstance()->update(timer);
+
    /* Elite::Camera* camera{ Elite::Camera::GetInstance() };
     camera->Update(elapsedTime);*/
 
@@ -99,9 +103,11 @@ void GameDX12::Render()
     ID3D12DescriptorHeap* heaps[] = { m_modelResources->Heap(), m_states->Heap() };
     commandList->SetDescriptorHeaps(static_cast<UINT>(std::size(heaps)), heaps);
 
-    Model::UpdateEffectMatrices(m_modelNormal, m_world, m_view, m_proj);
+    Matrix world{ ModelManager::GetInstance()->GetWorldDX11() };
 
-    m_model->Draw(commandList, m_modelNormal.cbegin());
+    Model::UpdateEffectMatrices(m_modelNormal, world, m_view, m_proj);
+
+    ModelManager::GetInstance()->GetModelDX12()->Draw(commandList, m_modelNormal.cbegin());
 
     //m_model->Draw(commandList, m_modelNormal.cbegin());
 
@@ -180,6 +186,7 @@ void GameDX12::CreateDeviceDependentResources()
     m_states = std::make_unique<CommonStates>(device);
 
     m_model = Model::CreateFromSDKMESH(device, L"cup.sdkmesh");
+    ModelManager::GetInstance()->SetModelDX12(m_model.get());
 
     ResourceUploadBatch resourceUpload(device);
 

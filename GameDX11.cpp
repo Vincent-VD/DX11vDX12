@@ -6,6 +6,7 @@
 #include "GameDX11.h"
 
 #include "ECamera.h"
+#include "ModelManager.h"
 #include "DirectXTK11/Inc/SimpleMath.h"
 
 extern void ExitGame() noexcept;
@@ -65,6 +66,8 @@ void GameDX11::Update(DX::StepTimer const& timer)
     // TODO: Add your game logic here.
     float time = float(timer.GetTotalSeconds());
 
+    ModelManager::GetInstance()->update(timer);
+
     m_world = Matrix::CreateRotationY(time * -2.f);
 }
 
@@ -87,7 +90,9 @@ void GameDX11::Render()
     context->OMSetDepthStencilState(m_states->DepthNone(), 0);
     context->RSSetState(m_states->CullNone());*/
 
-    m_model->Draw(context, *m_states, m_world, m_view, m_proj);
+    Matrix world{ ModelManager::GetInstance()->GetWorldDX11() };
+
+    ModelManager::GetInstance()->GetModelDX11()->Draw(context, *m_states, world, m_view, m_proj);
 
     m_deviceResources->PIXEndEvent();
 
@@ -105,7 +110,7 @@ void GameDX11::Clear()
     auto renderTarget = m_deviceResources->GetRenderTargetView();
     auto depthStencil = m_deviceResources->GetDepthStencilView();
 
-    context->ClearRenderTargetView(renderTarget, DirectX::Colors::CornflowerBlue);
+    context->ClearRenderTargetView(renderTarget, Colors::CornflowerBlue);
     context->ClearDepthStencilView(depthStencil, D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0);
     context->OMSetRenderTargets(1, &renderTarget, depthStencil);
 
@@ -128,6 +133,7 @@ void GameDX11::CreateDeviceDependentResources()
     m_fxFactory = std::make_unique<EffectFactory>(device);
 
     m_model = Model::CreateFromSDKMESH(device, L"cup.sdkmesh", *m_fxFactory);
+    ModelManager::GetInstance()->SetModelDX11(m_model.get());
 
     m_world = Matrix::Identity;
 }

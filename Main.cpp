@@ -5,6 +5,7 @@
 #include "pch.h"
 #include <iostream>
 #include <cstdio>
+#include "SDL.h"
 
 #include "BaseGame.h"
 #include "ECamera.h"
@@ -25,7 +26,6 @@ using namespace DirectX;
 namespace
 {
 	std::unique_ptr<BaseGame> g_game;
-	RenderType g_RenderType{ RenderType::DirectX11 };
 }
 
 LPCWSTR g_szAppName = L"DirectXProj_Win32";

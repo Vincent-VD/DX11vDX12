@@ -3,15 +3,6 @@
 #include <SDL_keyboard.h>
 #include <SDL_mouse.h>
 
-#ifdef DX11
-using namespace DirectX11;
-#endif
-
-#ifdef DX12
-using namespace  DirectX12;
-#endif
-
-
 namespace Elite
 {
 

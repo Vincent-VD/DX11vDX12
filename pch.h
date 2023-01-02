@@ -107,6 +107,8 @@ enum class RenderType
     Direct3d11on12 = 2
 };
 
+static RenderType g_RenderType{ RenderType::DirectX11 };
+
 namespace DX
 {
     inline void ThrowIfFailed(HRESULT hr)

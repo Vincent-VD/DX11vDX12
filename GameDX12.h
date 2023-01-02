@@ -38,12 +38,6 @@ private:
 
 	float m_aspectRatio;
 
-	struct Vertex
-	{
-		DirectX::XMFLOAT3 position;
-		DirectX::XMFLOAT4 color;
-	};
-
 	std::unique_ptr<DX::DeviceResourcesDX12> m_deviceResources;
 
 	std::unique_ptr<DirectX12::GraphicsMemory> m_graphicsMemory;
