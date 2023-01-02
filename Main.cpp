@@ -5,12 +5,11 @@
 #include "pch.h"
 #include <iostream>
 #include <cstdio>
-#include "SDL.h"
 
 #include "BaseGame.h"
-#include "ECamera.h"
 #include "GameDX11.h"
 #include "GameDX12.h"
+#include "ModelManager.h"
 #include "resource.h"
 
 using namespace DirectX;
@@ -22,11 +21,6 @@ using namespace DirectX;
 #endif
 
 #pragma warning(disable : 4061)
-
-namespace
-{
-	std::unique_ptr<BaseGame> g_game;
-}
 
 LPCWSTR g_szAppName = L"DirectXProj_Win32";
 
@@ -116,9 +110,6 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		g_game->Initialize(hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
 #define DX11
-	
-		Elite::Camera::GetInstance()->SetAspectRatio(rc.right, rc.bottom);
-
 	}
 
 	// Main message loop
@@ -151,6 +142,8 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	static bool s_in_suspend = false;
 	static bool s_minimized = false;
 	static bool s_fullscreen = false;
+	POINT initMousePos{};
+
 	// TODO: Set s_fullscreen to true if defaulting to fullscreen.
 
 	BaseGame* game{nullptr};
@@ -168,6 +161,13 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	}
 
 	WORD vkCode = LOWORD(wParam);
+
+	POINT mousePos;
+	GetCursorPos(&mousePos);
+	ScreenToClient(hWnd, &mousePos);
+	int x = mousePos.x;
+	int y = mousePos.y;
+	ModelManager::GetInstance()->SetDrag(x, y);
 
 	switch (message)
 	{
@@ -222,6 +222,23 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		break;
+
+	/*case WM_LBUTTONDOWN:
+		if(DragDetect(hWnd, initMousePos))
+		{
+			const int xDrag{ GetSystemMetrics(SM_CXDRAG) };
+			const int yDrag{ GetSystemMetrics(SM_CYDRAG) };
+			ModelManager::GetInstance()->SetDrag(xDrag, yDrag);
+			std::cout << "AFGHDFSUIJ\n";
+		}
+
+	case WM_RBUTTONDOWN:
+		if (DragDetect(hWnd, initMousePos))
+		{
+			const int xDrag{ GetSystemMetrics(SM_CXDRAG) };
+			const int yDrag{ GetSystemMetrics(SM_CYDRAG) };
+			ModelManager::GetInstance()->SetDrag(xDrag, yDrag);
+		}*/
 
 	case WM_SIZE:
 		if (wParam == SIZE_MINIMIZED)

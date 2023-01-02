@@ -36,6 +36,7 @@
 #endif
 
 #include <wrl/client.h>
+#include <wingdi.h>
 
 //DirectX11 headers
 #include <d3d11_1.h>
@@ -75,6 +76,7 @@
 #include <wrl.h>
 #include <shellapi.h>
 
+#include "BaseGame.h"
 #include "BufferHelpers.h"
 #include "CommonStates.h"
 #include "DDSTextureLoader.h"
@@ -108,6 +110,11 @@ enum class RenderType
 };
 
 static RenderType g_RenderType{ RenderType::DirectX11 };
+
+namespace
+{
+    std::unique_ptr<BaseGame> g_game;
+}
 
 namespace DX
 {

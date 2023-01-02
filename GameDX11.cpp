@@ -5,7 +5,6 @@
 #include "pch.h"
 #include "GameDX11.h"
 
-#include "ECamera.h"
 #include "ModelManager.h"
 #include "DirectXTK11/Inc/SimpleMath.h"
 
@@ -61,14 +60,14 @@ void GameDX11::Tick()
 // Updates the world.
 void GameDX11::Update(DX::StepTimer const& timer)
 {
-    const float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
+    //const float elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
     // TODO: Add your game logic here.
-    float time = float(timer.GetTotalSeconds());
+    //float time = float(timer.GetTotalSeconds());
 
     ModelManager::GetInstance()->update(timer);
 
-    m_world = Matrix::CreateRotationY(time * -2.f);
+    //m_world = Matrix::CreateRotationY(time * -2.f);
 }
 
 // Draws the scene.
@@ -145,7 +144,7 @@ void GameDX11::CreateWindowSizeDependentResources()
     m_view = Matrix::CreateLookAt(Vector3(2.f, 2.f, 2.f),
         Vector3::Zero, Vector3::UnitY);
     m_proj = Matrix::CreatePerspectiveFieldOfView(XM_PI / 4.f,
-        float(size.right) / float(size.bottom), 0.1f, 10.f);
+        static_cast<float>(size.right) / static_cast<float>(size.bottom), 0.1f, 10.f);
 }
 
 void GameDX11::OnActivated()

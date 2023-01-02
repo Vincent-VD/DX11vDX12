@@ -1,6 +1,5 @@
 #include "pch.h"
 #include "GameDX12.h"
-#include "ECamera.h"
 #include "ModelManager.h"
 
 //
