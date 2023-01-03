@@ -7,8 +7,6 @@ BaseGame::BaseGame() noexcept
 	, m_outputHeight(600)
 {
 	WCHAR assetsPath[512];
-	GetAssetsPath(assetsPath, _countof(assetsPath));
-	m_assetsPath = assetsPath;
 }
 
 void BaseGame::OnActivated()
@@ -43,9 +41,4 @@ void BaseGame::GetDefaultSize(int& width, int& height) const noexcept
 {
 	width = 800;
 	height = 600;
-}
-
-std::wstring BaseGame::GetAssetFullPath(LPCWSTR assetName)
-{
-	return m_assetsPath + assetName;
 }

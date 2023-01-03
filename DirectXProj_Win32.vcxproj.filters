@@ -108,8 +108,11 @@
       <Filter>Includes</Filter>
     </ClInclude>
     <ClInclude Include="ObjParser.h" />
-    <ClInclude Include="ModelManager.h">
-      <Filter>ModelManager</Filter>
+    <ClInclude Include="ReadData.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Shared.h">
+      <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -129,9 +132,6 @@
     </ClCompile>
     <ClCompile Include="DeviceResourcesDX12.cpp">
       <Filter>Common</Filter>
-    </ClCompile>
-    <ClCompile Include="ModelManager.cpp">
-      <Filter>ModelManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -156,5 +156,16 @@
     <None Include="files\cup.sdkmesh">
       <Filter>Objects</Filter>
     </None>
+    <None Include="SampleInstancing.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="PixelShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="VertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
   </ItemGroup>
 </Project>

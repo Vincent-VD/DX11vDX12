@@ -1,14 +1,13 @@
 #pragma once
 #include "StepTimer.h"
 //Header taken from minigin
-#include "DXSampleHelper.h"
 #include "DeviceResources.h"
 
 class BaseGame : public DX::IDeviceNotify
 {
 public:
 	BaseGame() noexcept;
-	virtual ~BaseGame() = 0 {};
+	virtual ~BaseGame() = default;
 
 	BaseGame(const BaseGame& other) = delete;
 	BaseGame(BaseGame&& other) noexcept = delete;
@@ -20,8 +19,6 @@ public:
 
 	// Basic game loop
 	virtual void Tick() = 0;
-
-	
 
 	// Messages
 	virtual void OnActivated();
@@ -44,8 +41,6 @@ protected:
 
 	// Game state
 	DX::StepTimer                                       m_timer;
-
-	std::wstring GetAssetFullPath(LPCWSTR assetName);
 
 private:
 

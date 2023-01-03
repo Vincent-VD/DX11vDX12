@@ -216,11 +216,11 @@ void Keyboard::ProcessMessage(UINT, WPARAM, LPARAM)
 //
 // For a Windows Store app or Universal Windows Platform (UWP) app, add the following:
 //
-// void App::SetWindow(CoreWindow^ window )
-// {
-//     m_keyboard->SetWindow(window);
-// }
-//
+ void App::SetWindow(CoreWindow^ window )
+ {
+     m_keyboard->SetWindow(window);
+ }
+
 
 #include <Windows.Devices.Input.h>
 

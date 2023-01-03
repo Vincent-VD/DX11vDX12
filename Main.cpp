@@ -9,11 +9,16 @@
 #include "BaseGame.h"
 #include "GameDX11.h"
 #include "GameDX12.h"
-#include "ModelManager.h"
 #include "resource.h"
 
 using namespace DirectX;
 
+namespace Game
+{
+	std::unique_ptr<BaseGame> g_game;
+	static RenderType g_RenderType{ RenderType::DirectX11 };
+
+}
 
 #ifdef __clang__
 #pragma clang diagnostic ignored "-Wcovered-switch-default"
@@ -45,6 +50,7 @@ extern "C"
 // Entry point
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
+	//using namespace Game;
 	AllocConsole();
 	freopen("CONIN$", "r", stdin);
 	freopen("CONOUT$", "w", stdout);
@@ -64,7 +70,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	//LoadResource(hInstance, MAKEINTRESOURCE(IDR_MENU1));
 
-	g_game = std::make_unique<GameDX11>();
+	Game::g_game = std::make_unique<GameDX11>();
 
 	// Register class and create window
 	{
@@ -85,7 +91,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		// Create window
 		int w, h;
-		g_game->GetDefaultSize(w, h);
+		Game::g_game->GetDefaultSize(w, h);
 
 		RECT rc = { 0, 0, static_cast<LONG>(w), static_cast<LONG>(h) };
 
@@ -103,11 +109,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		ShowWindow(hwnd, nCmdShow);
 		// TODO: Change nCmdShow to SW_SHOWMAXIMIZED to default to fullscreen.
 
-		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(g_game.get()));
+		SetWindowLongPtr(hwnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(Game::g_game.get()));
 
 		GetClientRect(hwnd, &rc);
 
-		g_game->Initialize(hwnd, rc.right - rc.left, rc.bottom - rc.top);
+		Game::g_game->Initialize(hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
 #define DX11
 	}
@@ -123,11 +129,11 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 		}
 		else
 		{
-			g_game->Tick();
+			Game::g_game->Tick();
 		}
 	}
 
-	g_game.reset();
+	Game::g_game.reset();
 
 	CoUninitialize();
 
@@ -148,7 +154,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 
 	BaseGame* game{nullptr};
 
-	switch(g_RenderType)
+	switch(Game::g_RenderType)
 	{
 	case RenderType::DirectX11:
 		game = reinterpret_cast<GameDX11*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
@@ -167,7 +173,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	ScreenToClient(hWnd, &mousePos);
 	int x = mousePos.x;
 	int y = mousePos.y;
-	ModelManager::GetInstance()->SetDrag(x, y);
+	//ModelManager::GetInstance()->SetDrag(x, y);
 
 	switch (message)
 	{
@@ -197,9 +203,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX12, MF_UNCHECKED);
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECT3D11ON12, MF_UNCHECKED);
 			//g_game.get()->~BaseGame();
-			g_game = std::make_unique<GameDX11>();
-			g_game->Initialize(hWnd, 800, 600);
-			SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(g_game.get()));
+			Game::g_game = std::make_unique<GameDX11>();
+			Game::g_game->Initialize(hWnd, 800, 600);
+			SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(Game::g_game.get()));
 			break;
 		case ID_RENDERMODE_DIRECTX12:
 			#undef DX11
@@ -208,9 +214,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX11, MF_UNCHECKED);
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX12, MF_CHECKED);
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECT3D11ON12, MF_UNCHECKED);
-			g_game = std::make_unique<GameDX12>();
-			g_game->Initialize(hWnd, 800, 600);
-			SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(g_game.get()));
+			Game::g_game = std::make_unique<GameDX12>();
+			Game::g_game->Initialize(hWnd, 800, 600);
+			SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(Game::g_game.get()));
 			//  MessageBeep(MB_ICONINFORMATION);
 			break;
 		case ID_RENDERMODE_DIRECT3D11ON12:
@@ -408,7 +414,7 @@ void ExitGame() noexcept
 
 void SwitchRenderMode()
 {
-
+	using namespace Game;
 	switch (g_RenderType)
 	{
 	case RenderType::DirectX11:

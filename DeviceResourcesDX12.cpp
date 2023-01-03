@@ -45,22 +45,22 @@ DeviceResourcesDX12::DeviceResourcesDX12(
     UINT backBufferCount,
     D3D_FEATURE_LEVEL minFeatureLevel,
     unsigned int flags) noexcept(false) :
-        m_backBufferIndex(0),
-        m_fenceValues{},
-        m_rtvDescriptorSize(0),
-        m_screenViewport{},
-        m_scissorRect{},
-        m_backBufferFormat(backBufferFormat),
-        m_depthBufferFormat(depthBufferFormat),
-        m_backBufferCount(backBufferCount),
-        m_d3dMinFeatureLevel(minFeatureLevel),
-        m_window(nullptr),
-        m_d3dFeatureLevel(D3D_FEATURE_LEVEL_11_0),
-        m_dxgiFactoryFlags(0),
-        m_outputSize{0, 0, 1, 1},
-        m_colorSpace(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709),
-        m_options(flags),
-        m_deviceNotify(nullptr)
+    m_backBufferIndex(0),
+    m_fenceValues{},
+    m_rtvDescriptorSize(0),
+    m_screenViewport{},
+    m_scissorRect{},
+    m_backBufferFormat(backBufferFormat),
+    m_depthBufferFormat(depthBufferFormat),
+    m_backBufferCount(backBufferCount),
+    m_d3dMinFeatureLevel(minFeatureLevel),
+    m_window(nullptr),
+    m_d3dFeatureLevel(D3D_FEATURE_LEVEL_11_0),
+    m_dxgiFactoryFlags(0),
+    m_outputSize{ 0, 0, 1, 1 },
+    m_colorSpace(DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709),
+    m_options(flags),
+    m_deviceNotify(nullptr)
 {
     if (backBufferCount < 2 || backBufferCount > MAX_BACK_BUFFER_COUNT)
     {
@@ -149,7 +149,7 @@ void DeviceResourcesDX12::CreateDeviceResources()
         adapter.Get(),
         m_d3dMinFeatureLevel,
         IID_PPV_ARGS(m_d3dDevice.ReleaseAndGetAddressOf())
-        );
+    );
     ThrowIfFailed(hr);
 
     m_d3dDevice->SetName(L"DeviceResourcesDX12");
@@ -298,7 +298,7 @@ void DeviceResourcesDX12::CreateWindowSizeDependentResources()
             backBufferHeight,
             backBufferFormat,
             (m_options & c_AllowTearing) ? DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING : 0u
-            );
+        );
 
         if (hr == DXGI_ERROR_DEVICE_REMOVED || hr == DXGI_ERROR_DEVICE_RESET)
         {
@@ -348,7 +348,7 @@ void DeviceResourcesDX12::CreateWindowSizeDependentResources()
             &fsSwapChainDesc,
             nullptr,
             swapChain.GetAddressOf()
-            ));
+        ));
 
         ThrowIfFailed(swapChain.As(&m_swapChain));
 
@@ -394,7 +394,7 @@ void DeviceResourcesDX12::CreateWindowSizeDependentResources()
             backBufferHeight,
             1, // This depth stencil view has only one texture.
             1  // Use a single mipmap level.
-            );
+        );
         depthStencilDesc.Flags |= D3D12_RESOURCE_FLAG_ALLOW_DEPTH_STENCIL;
 
         D3D12_CLEAR_VALUE depthOptimizedClearValue = {};
@@ -409,7 +409,7 @@ void DeviceResourcesDX12::CreateWindowSizeDependentResources()
             D3D12_RESOURCE_STATE_DEPTH_WRITE,
             &depthOptimizedClearValue,
             IID_PPV_ARGS(m_depthStencil.ReleaseAndGetAddressOf())
-            ));
+        ));
 
         m_depthStencil->SetName(L"Depth stencil");
 

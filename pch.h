@@ -39,7 +39,7 @@
 #include <wingdi.h>
 
 //DirectX11 headers
-#include <d3d11_1.h>
+#include <d3d11_3.h>
 #include <dxgi1_6.h>
 
 #ifdef USING_DIRECTX_HEADERS
@@ -76,6 +76,17 @@
 #include <wrl.h>
 #include <shellapi.h>
 
+#include "DirectXTK11/Inc/GamePad.h"
+#include "DirectXTK11/Inc/Keyboard.h"
+#include "DirectXTK11/Inc/Mouse.h"
+#include "DirectXTK11/Inc/SimpleMath.h"
+
+#include "DirectXTK12/Inc/GamePad.h"
+#include "DirectXTK12/Inc/Keyboard.h"
+#include "DirectXTK12/Inc/Mouse.h"
+#include "DirectXTK12/Inc/SimpleMath.h"
+
+#include "Shared.h"
 #include "BaseGame.h"
 #include "BufferHelpers.h"
 #include "CommonStates.h"
@@ -109,12 +120,8 @@ enum class RenderType
     Direct3d11on12 = 2
 };
 
-static RenderType g_RenderType{ RenderType::DirectX11 };
 
-namespace
-{
-    std::unique_ptr<BaseGame> g_game;
-}
+
 
 namespace DX
 {
