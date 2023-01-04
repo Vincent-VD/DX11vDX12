@@ -16,29 +16,6 @@ using namespace DirectX12::SimpleMath;
 
 using Microsoft::WRL::ComPtr;
 
-namespace
-{
-	//--------------------------------------------------------------------------------------
-	// Constants
-	//--------------------------------------------------------------------------------------
-	const uint32_t  c_maxInstances = 20000;
-	const uint32_t  c_startInstanceCount = 5000;
-	const uint32_t  c_minInstanceCount = 1000;
-	const float     c_boxBounds = 60.0f;
-	const size_t    c_cubeIndexCount = 36;
-	const float     c_velocityMultiplier = 500.0f;
-	const float     c_rotationGain = 0.004f;
-
-	//--------------------------------------------------------------------------------------
-	// Cube vertex definition
-	//--------------------------------------------------------------------------------------
-	struct Vertex
-	{
-		XMFLOAT3 pos;
-		XMFLOAT3 norm;
-	};
-}
-
 GameDX12::GameDX12() noexcept :
 	BaseGame(),
 	m_gamepadPresent(false),
@@ -159,7 +136,7 @@ void GameDX12::Update(DX::StepTimer const& timer)
 
 		if ((left > 0.f) || (right > 0.f))
 		{
-			m_yaw += ((right > 0.f) ? 0.1f : -0.1f);
+			m_yaw += ((right > 0.f) ? -0.1f : 0.1f);
 		}
 
 		if ((up > 0.f) || (down > 0.f))

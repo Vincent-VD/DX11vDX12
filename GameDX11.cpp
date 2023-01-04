@@ -17,28 +17,6 @@ using namespace DirectX11::SimpleMath;
 
 using Microsoft::WRL::ComPtr;
 
-namespace
-{
-	//--------------------------------------------------------------------------------------
-	// Constants
-	//--------------------------------------------------------------------------------------
-	const uint32_t  c_maxInstances = 20000;
-	const uint32_t  c_startInstanceCount = 5000;
-	const uint32_t  c_minInstanceCount = 1000;
-	const float     c_boxBounds = 60.0f;
-	const size_t    c_cubeIndexCount = 36;
-	const float     c_velocityMultiplier = 500.0f;
-	const float     c_rotationGain = 0.004f;
-
-	//--------------------------------------------------------------------------------------
-	// Cube vertex definition
-	//--------------------------------------------------------------------------------------
-	struct Vertex
-	{
-		XMFLOAT3 pos;
-		XMFLOAT3 norm;
-	};
-}
 
 GameDX11::GameDX11() noexcept :
 	BaseGame(),
@@ -151,7 +129,7 @@ void GameDX11::Update(DX::StepTimer const& timer)
 
 		if ((up > 0.f) || (down > 0.f))
 		{
-			m_pitch += ((down > 0.f) ? 0.1f : -0.1f);
+			m_pitch += ((down > 0.f) ? -0.1f : 0.1f);
 		}
 
 		if (GetAsyncKeyState(VK_HOME))
@@ -184,16 +162,16 @@ void GameDX11::Update(DX::StepTimer const& timer)
 		ExitGame();
 	}
 
-	if (m_keyboardButtons.IsKeyPressed(Keyboard::Q))
+	if (GetAsyncKeyState('R'))
 	{
 		m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 1000);
 	}
-	else if (m_keyboardButtons.IsKeyPressed(Keyboard::E))
+	else if (GetAsyncKeyState('E'))
 	{
 		m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 1000);
 	}
 
-	if (m_keyboardButtons.IsKeyPressed(Keyboard::Space))
+	if (GetAsyncKeyState(VK_SPACE))
 	{
 		ResetSimulation();
 	}
