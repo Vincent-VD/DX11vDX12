@@ -20,14 +20,11 @@
     <Filter Include="Includes">
       <UniqueIdentifier>{90fac1d3-b64a-49e0-9579-891fd7687ec7}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Camera">
-      <UniqueIdentifier>{dd9d922f-0253-4136-992b-b89c64b865bf}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Objects">
       <UniqueIdentifier>{e57a0da5-0bad-4b30-afd7-138f7706b080}</UniqueIdentifier>
     </Filter>
-    <Filter Include="ModelManager">
-      <UniqueIdentifier>{6dd031bf-da7e-4fb6-8721-b132e43dfdea}</UniqueIdentifier>
+    <Filter Include="Logger">
+      <UniqueIdentifier>{8e37721d-a3cf-44b6-867e-9c0813e3aa68}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -114,6 +111,9 @@
     <ClInclude Include="Shared.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Logger.h">
+      <Filter>Logger</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -132,6 +132,9 @@
     </ClCompile>
     <ClCompile Include="DeviceResourcesDX12.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Logger.cpp">
+      <Filter>Logger</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

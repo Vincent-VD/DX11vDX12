@@ -35,10 +35,18 @@ void BaseGame::OnDisplayChange()
 
 void BaseGame::OnWindowSizeChanged(int width, int height)
 {
+	m_outputWidth = width;
+	m_outputHeight = height;
 }
 
 void BaseGame::GetDefaultSize(int& width, int& height) const noexcept
 {
 	width = 800;
 	height = 600;
+}
+
+void BaseGame::GetCurrentWindowSize(int& width, int& height) const noexcept
+{
+	width = m_outputWidth;
+	height = m_outputHeight;
 }

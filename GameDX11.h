@@ -43,6 +43,8 @@ public:
 	virtual void OnDisplayChange() override;
 	virtual void OnWindowSizeChanged(int width, int height) override;
 
+    uint32_t GetCurrentInstanceCount() const { return m_usedInstanceCount; };
+
 private:
     // Device resources.
     std::unique_ptr<DX::DeviceResourcesDX11>    m_deviceResources;

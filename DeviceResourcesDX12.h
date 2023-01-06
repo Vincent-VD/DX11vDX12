@@ -12,7 +12,7 @@ namespace DX
     class DeviceResourcesDX12
     {
     public:
-        static constexpr unsigned int c_AllowTearing = 0x1;
+        static constexpr unsigned int c_AllowTearing = 0x0;
         static constexpr unsigned int c_EnableHDR = 0x2;
 
         DeviceResourcesDX12(DXGI_FORMAT backBufferFormat = DXGI_FORMAT_B8G8R8A8_UNORM,

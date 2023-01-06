@@ -3,6 +3,7 @@
 
 #include <Windows.UI.Core.h>
 
+#include "Logger.h"
 #include "ReadData.h"
 
 //
@@ -72,9 +73,13 @@ void GameDX12::Initialize(HWND window, int width, int height)
 void GameDX12::Tick()
 {
 	m_timer.Tick([&]()
+	{
+		Update(m_timer);
+		if (Logger::GetInstance()->Update(m_timer))
 		{
-			Update(m_timer);
-		});
+			Logger::GetInstance()->Log(m_timer, nullptr, this);
+		}
+	});
 
 	Render();
 }
@@ -174,18 +179,30 @@ void GameDX12::Update(DX::StepTimer const& timer)
 		ExitGame();
 	}
 
-	if (m_keyboardButtons.IsKeyPressed(Keyboard::Q))
+	if (GetAsyncKeyState('R'))
 	{
 		m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 1000);
+		if(m_usedInstanceCount <= c_maxInstances)
+		{
+			std::cout << m_usedInstanceCount << std::endl;
+		}
 	}
-	else if (m_keyboardButtons.IsKeyPressed(Keyboard::E))
+	if (GetAsyncKeyState('E'))
 	{
 		m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 1000);
+		if (m_usedInstanceCount <= c_maxInstances)
+		{
+			std::cout << m_usedInstanceCount << std::endl;
+		}
 	}
 
-	if (m_keyboardButtons.IsKeyPressed(Keyboard::Space))
+	if (GetAsyncKeyState(VK_SPACE))
 	{
 		ResetSimulation();
+		if (m_usedInstanceCount <= c_maxInstances)
+		{
+			std::cout << m_usedInstanceCount << std::endl;
+		}
 	}
 
 	// Limit to avoid looking directly up or down
@@ -789,6 +806,7 @@ void GameDX12::OnDisplayChange()
 
 void GameDX12::OnWindowSizeChanged(int width, int height)
 {
+	BaseGame::OnWindowSizeChanged(width, height);
 	if (!m_deviceResources->WindowSizeChanged(width, height))
 		return;
 

@@ -174,6 +174,7 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 	int x = mousePos.x;
 	int y = mousePos.y;
 	//ModelManager::GetInstance()->SetDrag(x, y);
+	int currWidth{}, currHeight{};
 
 	switch (message)
 	{
@@ -203,8 +204,10 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX12, MF_UNCHECKED);
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECT3D11ON12, MF_UNCHECKED);
 			//g_game.get()->~BaseGame();
+			
+			Game::g_game->GetCurrentWindowSize(currWidth, currHeight);
 			Game::g_game = std::make_unique<GameDX11>();
-			Game::g_game->Initialize(hWnd, 800, 600);
+			Game::g_game->Initialize(hWnd, currWidth, currHeight);
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(Game::g_game.get()));
 			break;
 		case ID_RENDERMODE_DIRECTX12:
@@ -214,8 +217,9 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX11, MF_UNCHECKED);
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECTX12, MF_CHECKED);
 			CheckMenuItem(GetMenu(hWnd), ID_RENDERMODE_DIRECT3D11ON12, MF_UNCHECKED);
+			Game::g_game->GetCurrentWindowSize(currWidth, currHeight);
 			Game::g_game = std::make_unique<GameDX12>();
-			Game::g_game->Initialize(hWnd, 800, 600);
+			Game::g_game->Initialize(hWnd, currWidth, currHeight);
 			SetWindowLongPtr(hWnd, GWLP_USERDATA, reinterpret_cast<LONG_PTR>(Game::g_game.get()));
 			//  MessageBeep(MB_ICONINFORMATION);
 			break;

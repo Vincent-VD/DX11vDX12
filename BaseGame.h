@@ -31,6 +31,7 @@ public:
 
 	// Properties
 	void GetDefaultSize(int& width, int& height) const noexcept;
+	void GetCurrentWindowSize(int& width, int& height) const noexcept;
 
 protected:
 

@@ -7,6 +7,7 @@
 
 #include <Windows.UI.Core.h>
 
+#include "Logger.h"
 #include "DirectXTK11/Inc/SimpleMath.h"
 #include "ReadData.h"
 
@@ -60,6 +61,10 @@ void GameDX11::Tick()
 	m_timer.Tick([&]()
 	{
 		Update(m_timer);
+		if(Logger::GetInstance()->Update(m_timer))
+		{
+			Logger::GetInstance()->Log(m_timer, this, nullptr);
+		}
 	});
 
 	Render();
@@ -72,7 +77,7 @@ void GameDX11::Update(DX::StepTimer const& timer)
 {
 	PIXBeginEvent(PIX_COLOR_DEFAULT, L"Update");
 
-	float elapsedTime = float(timer.GetElapsedSeconds());
+	const auto elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
 	auto left{ static_cast<float>(std::abs(GetAsyncKeyState('A'))) };
 	auto right{ static_cast<float>(std::abs(GetAsyncKeyState('D'))) };
@@ -165,15 +170,27 @@ void GameDX11::Update(DX::StepTimer const& timer)
 	if (GetAsyncKeyState('R'))
 	{
 		m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 1000);
+		if (m_usedInstanceCount <= c_maxInstances)
+		{
+			std::cout << m_usedInstanceCount << std::endl;
+		}
 	}
-	else if (GetAsyncKeyState('E'))
+	if (GetAsyncKeyState('E'))
 	{
 		m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 1000);
+		if (m_usedInstanceCount <= c_maxInstances)
+		{
+			std::cout << m_usedInstanceCount << std::endl;
+		}
 	}
 
 	if (GetAsyncKeyState(VK_SPACE))
 	{
 		ResetSimulation();
+		if (m_usedInstanceCount <= c_maxInstances)
+		{
+			std::cout << m_usedInstanceCount << std::endl;
+		}
 	}
 
 	// Limit to avoid looking directly up or down
@@ -584,6 +601,7 @@ void GameDX11::ResetSimulation()
 {
 	// Reset positions to starting point, and orientations to identity.
    // Note that instance 0 is the scene bounding box, and the position, orientation and scale are static (i.e. never update).
+	//m_usedInstanceCount = c_minInstanceCount;
 	for (size_t i = 1; i < c_maxInstances; ++i)
 	{
 		m_CPUInstanceData[i].positionAndScale = XMFLOAT4(0.0f, 0.0f, c_boxBounds / 2.0f, FloatRand(0.1f, 0.4f));
@@ -656,6 +674,7 @@ void GameDX11::OnDisplayChange()
 
 void GameDX11::OnWindowSizeChanged(int width, int height)
 {
+	BaseGame::OnWindowSizeChanged(width, height);
 	if (!m_deviceResources->WindowSizeChanged(width, height))
 		return;
 
