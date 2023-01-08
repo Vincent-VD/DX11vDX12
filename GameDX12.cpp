@@ -89,7 +89,7 @@ void GameDX12::Update(DX::StepTimer const& timer)
 {
 	PIXBeginEvent(PIX_COLOR_DEFAULT, L"Update");
 
-	float elapsedTime = float(timer.GetElapsedSeconds());
+	const auto elapsedTime = static_cast<float>(timer.GetElapsedSeconds());
 
 	auto left{ static_cast<float>(std::abs(GetAsyncKeyState('A'))) };
 	auto right{ static_cast<float>(std::abs(GetAsyncKeyState('D'))) };

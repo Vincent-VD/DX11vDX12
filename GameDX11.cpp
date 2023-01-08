@@ -11,6 +11,8 @@
 #include "DirectXTK11/Inc/SimpleMath.h"
 #include "ReadData.h"
 
+#include "ObjParser.h"
+
 extern void ExitGame() noexcept;
 
 using namespace DirectX11;
@@ -106,11 +108,11 @@ void GameDX11::Update(DX::StepTimer const& timer)
 
 		if (m_gamePadButtons.rightShoulder == GamePad::ButtonStateTracker::ButtonState::PRESSED)
 		{
-			m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 1000);
+			m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 100);
 		}
 		else if (m_gamePadButtons.leftShoulder == GamePad::ButtonStateTracker::ButtonState::PRESSED)
 		{
-			m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 1000);
+			m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 100);
 		}
 
 		if (pad.IsLeftStickPressed())
@@ -169,7 +171,7 @@ void GameDX11::Update(DX::StepTimer const& timer)
 
 	if (GetAsyncKeyState('R'))
 	{
-		m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 1000);
+		m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 100);
 		if (m_usedInstanceCount <= c_maxInstances)
 		{
 			std::cout << m_usedInstanceCount << std::endl;
@@ -177,7 +179,7 @@ void GameDX11::Update(DX::StepTimer const& timer)
 	}
 	if (GetAsyncKeyState('E'))
 	{
-		m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 1000);
+		m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 100);
 		if (m_usedInstanceCount <= c_maxInstances)
 		{
 			std::cout << m_usedInstanceCount << std::endl;
@@ -422,9 +424,13 @@ void GameDX11::CreateDeviceDependentResources()
 			device->CreatePixelShader(shaderBytecode.data(), shaderBytecode.size(), nullptr, m_pixelShader.ReleaseAndGetAddressOf())
 		);
 	}
+	std::vector<Vertex> verts{}; //vertex, normal (index)
+	std::vector<uint32_t> indcs{};
 
+	OBJ::ParseOBJ("files/stanford_dragon.obj", verts, indcs);
 	// Create and initialize the vertex buffer defining a cube.
 	{
+
 		static const Vertex vertices[] =
 		{
 			{ XMFLOAT3(-1,  -1,  -1), XMFLOAT3(0,    0,  -1) },
@@ -458,9 +464,11 @@ void GameDX11::CreateDeviceDependentResources()
 			{ XMFLOAT3(1,   1,  -1), XMFLOAT3(0,    1,   0) },    // Y Positive face
 		};
 
-		D3D11_SUBRESOURCE_DATA initialData = { vertices, 0, 0 };
+		//const std::vector<Vertex> vertexes{ OBJ::ConvertPointsToVertex(verts, positions, normals) };
 
-		CD3D11_BUFFER_DESC bufferDesc(sizeof(vertices), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE);
+		D3D11_SUBRESOURCE_DATA initialData = { verts.data() };
+
+		CD3D11_BUFFER_DESC bufferDesc(sizeof(Vertex) * static_cast<uint32_t>(verts.size()), D3D11_BIND_VERTEX_BUFFER, D3D11_USAGE_IMMUTABLE);
 		bufferDesc.StructureByteStride = sizeof(Vertex);
 
 		DX::ThrowIfFailed(
@@ -524,10 +532,12 @@ void GameDX11::CreateDeviceDependentResources()
 			20, 23, 22,
 		};
 
-		D3D11_SUBRESOURCE_DATA initialData = { indices, 0, 0 };
+		c_cubeIndexCount = static_cast<uint32_t>(indcs.size());
 
-		CD3D11_BUFFER_DESC bufferDesc(sizeof(indices), D3D11_BIND_INDEX_BUFFER, D3D11_USAGE_IMMUTABLE);
-		bufferDesc.StructureByteStride = sizeof(uint16_t);
+		D3D11_SUBRESOURCE_DATA initialData = { indcs.data() };
+
+		CD3D11_BUFFER_DESC bufferDesc(sizeof(uint32_t) * static_cast<uint32_t>(indcs.size()), D3D11_BIND_INDEX_BUFFER, D3D11_USAGE_IMMUTABLE);
+		bufferDesc.StructureByteStride = sizeof(uint32_t);
 
 		DX::ThrowIfFailed(
 			device->CreateBuffer(&bufferDesc, &initialData, m_indexBuffer.ReleaseAndGetAddressOf())
@@ -559,8 +569,8 @@ void GameDX11::CreateDeviceDependentResources()
 	// Set up the position and scale for the container box. Scale is negative to turn the box inside-out 
 	// (this effectively reverses the normals and backface culling).
 	// Scale the outside box to slightly larger than our scene boundary, so bouncing boxes never actually clip it.
-	m_CPUInstanceData[0].positionAndScale = XMFLOAT4(0.0f, 0.0f, 0.0f, -(c_boxBounds + 5));
-	m_CPUInstanceData[0].quaternion = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	//m_CPUInstanceData[0].positionAndScale = XMFLOAT4(0.0f, 0.0f, 0.0f, -(c_boxBounds + 5));
+	//m_CPUInstanceData[0].quaternion = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Initialize the directional light.
 	XMStoreFloat4(&m_lights.directional, XMVector3Normalize(XMVectorSet(1.0f, 4.0f, -2.0f, 0)));
@@ -575,7 +585,7 @@ void GameDX11::CreateWindowSizeDependentResources()
 	// Initialize the projection matrix.
 	auto size = m_deviceResources->GetOutputSize();
 
-	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, float(size.right) / float(size.bottom), 0.1f, 500.0f);
+	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, static_cast<float>(size.right) / static_cast<float>(size.bottom), 0.1f, 500.0f);
 
 	//XMFLOAT4X4 orient = m_deviceResources->GetOrientationTransform3D();
 
@@ -602,9 +612,9 @@ void GameDX11::ResetSimulation()
 	// Reset positions to starting point, and orientations to identity.
    // Note that instance 0 is the scene bounding box, and the position, orientation and scale are static (i.e. never update).
 	//m_usedInstanceCount = c_minInstanceCount;
-	for (size_t i = 1; i < c_maxInstances; ++i)
+	for (size_t i = 0; i < c_maxInstances; ++i)
 	{
-		m_CPUInstanceData[i].positionAndScale = XMFLOAT4(0.0f, 0.0f, c_boxBounds / 2.0f, FloatRand(0.1f, 0.4f));
+		m_CPUInstanceData[i].positionAndScale = XMFLOAT4(0.0f, 0.0f, c_boxBounds / 2.0f, FloatRand(60.f, 70.f));
 		m_CPUInstanceData[i].quaternion = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 		// For the first c_pointLightCount in the updated array, we scale up by a small factor so they stand out, and

@@ -25,7 +25,7 @@ void Logger::Release()
 Logger::Logger()
 {
 	m_FileStream.open(m_FileName.c_str());
-	m_FileStream << "Total time; FPS; Instances; Triangle Count\n";
+	m_FileStream << "Total time; FPS; Render Mode; Instances; Triangle Count\n";
 }
 
 Logger::~Logger()
@@ -51,19 +51,21 @@ void Logger::Log(DX::StepTimer timer, const GameDX11* pDX11, const GameDX12* pDX
 	const uint32_t fps{ timer.GetFramesPerSecond() };
 	const auto totalTime{ static_cast<uint32_t>(timer.GetTotalSeconds())};
 	uint32_t Instances{};
+	std::string renderMode{};
 
 	if (pDX11)
 	{
 		Instances = pDX11->GetCurrentInstanceCount();
+		renderMode = "DX11";
 	} else
 	{
 		Instances = pDX12->GetCurrentInstanceCount();
+		renderMode = "DX12";
 	}
 
 	const uint32_t CurrTriangleCount{ Instances * 12 };
 
-
 	std::stringstream stream{};
-	stream << std::to_string(totalTime) << "; " << std::to_string(fps) << "; " << std::to_string(Instances) << "; " << std::to_string(CurrTriangleCount) << "\n";
+	stream << std::to_string(totalTime) << "; " << std::to_string(fps) << "; " << renderMode << "; " << std::to_string(Instances) << "; " << std::to_string(CurrTriangleCount) << "\n";
 	m_FileStream << stream.rdbuf();
 }

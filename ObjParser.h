@@ -28,6 +28,11 @@ namespace OBJ
 			return std::string{ std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z) };
 		}
 
+		XMFLOAT3 ToXMFLOAT3() const
+		{
+			return XMFLOAT3{ x, y, z };
+		}
+
 		float x{}, y{}, z{};
 	};
 
@@ -68,6 +73,11 @@ namespace OBJ
 			, y(Y)
 			, z(Z)
 		{
+		}
+
+		XMFLOAT3 ToXMFLOAT3() const
+		{
+			return XMFLOAT3{ x, y, z };
 		}
 
 		std::string to_string()
@@ -125,7 +135,34 @@ namespace OBJ
 			return std::string{ std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z) };
 		}
 
+		XMFLOAT3 ToXMFLOAT3() const
+		{
+			return XMFLOAT3{float(x), float(y), float(z)};
+		}
+
 		int x{}, y{}, z{};
+	};
+
+	struct IPoint2
+	{
+	public:
+		IPoint2()
+		{
+			this->x = 0;
+			this->y = 0;
+		}
+		IPoint2(int x, int y)
+		{
+			this->x = x;
+			this->y = y;
+		}
+
+		std::string to_string()
+		{
+			return std::string{ std::to_string(x) + " " + std::to_string(y) };
+		}
+
+		int x{}, y{};
 	};
 
 	struct Vertex_Input
@@ -133,28 +170,37 @@ namespace OBJ
 	public:
 		Vertex_Input()
 		{
-			this->indices = IPoint3{};
 			this->Position = FPoint3{};
 			this->Normal = FVector3{};
-			this->UV = FVector2{};
 		}
-		Vertex_Input(IPoint3 idx, FPoint3 pos, FVector3 nor, FVector2 uv)
+		Vertex_Input(FPoint3 pos, FVector3 nor)
 		{
-			this->indices = idx;
 			this->Position = pos;
 			this->Normal = nor;
-			this->UV = uv;
 		}
-		IPoint3 indices{};
 		FPoint3 Position{};
 		FVector3 Normal{};
-		FVector2 UV{};
 	};
 
-	//REFERENCE: https://stackoverflow.com/questions/21120699/c-obj-file-parser
-	inline void ParseOBJ(const std::string& filename, std::vector<IPoint3>& vertices, std::vector<uint32_t>& indices, std::vector<FPoint3>& positions, std::vector<FVector3>& normals, std::vector<FVector2>& uvs)
+	inline std::vector<Vertex> ConvertPointsToVertex(const std::vector<IPoint2>& verts, const std::vector<FPoint3>& positions, const std::vector<FVector3>& normals)
 	{
+		std::vector<Vertex> res{};
+		for (auto& vert : verts)
+		{
+			const FPoint3 pos{ positions[vert.x] };
+			const FVector3 norm{ normals[vert.y] };
+			res.push_back({ pos.ToXMFLOAT3(), norm.ToXMFLOAT3() });
+		}
+		return res;
+		
+	}
 
+	//REFERENCE: https://stackoverflow.com/questions/21120699/c-obj-file-parser
+	inline void ParseOBJ(const std::string& filename, std::vector<Vertex>& vertices, std::vector<uint32_t>& indices)
+	{
+		std::vector<FPoint3> positions{};
+		std::vector<FVector2> uvs{};
+		std::vector<FVector3> normals{};
 		int idx{};
 		// Open the file
 		std::ifstream obj(filename.c_str());
@@ -206,17 +252,18 @@ namespace OBJ
 				ss << line2;
 				for (int iter = 0; iter < 3; ++iter)
 				{
-					int v{}, n{}, t{};
-					ss >> v;
-					ss.ignore();
-					ss >> n;
-					ss.ignore();
-					ss >> t;
-					v--; n--; t--;
-					vertices.push_back(IPoint3{ v, n, t });
+					std::string str;
+					ss >> str;
+					auto pos1{ str.find_first_of("//") };
+					auto pos2{ str.find_last_of("//") };
+					auto v{ std::stoi(str.substr(0, pos1).c_str()) };
+					auto n{ std::stoi(str.substr(pos2 + 1).c_str()) };
+					v--; n--;
+					vertices.push_back(Vertex{ positions[v].ToXMFLOAT3(), normals[n].ToXMFLOAT3()});
 					indices.push_back(idx++);
 				}
 			}
 		}
+		obj.close();
 	}
 }
