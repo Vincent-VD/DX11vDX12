@@ -13,8 +13,8 @@
 	"| DENY_DOMAIN_SHADER_ROOT_ACCESS " \
 	"| DENY_GEOMETRY_SHADER_ROOT_ACCESS " \
 	"| DENY_HULL_SHADER_ROOT_ACCESS), " \
-    "CBV(b0, space = 0, visibility=SHADER_VISIBILITY_VERTEX), " \
-    "CBV(b0, space = 0, visibility=SHADER_VISIBILITY_PIXEL)"
+	"CBV(b0, space = 0, visibility=SHADER_VISIBILITY_VERTEX), " \
+	"CBV(b0, space = 0, visibility=SHADER_VISIBILITY_PIXEL)"
 
 //--------------------------------------------------------------------------------------
 // Name: InstancingConstants
@@ -22,7 +22,7 @@
 //--------------------------------------------------------------------------------------
 cbuffer InstancingConstants
 {
-    float4x4 Clip; // Clip transform
+	float4x4 Clip; // Clip transform
 };
 
 //--------------------------------------------------------------------------------------
@@ -31,9 +31,9 @@ cbuffer InstancingConstants
 //--------------------------------------------------------------------------------------
 cbuffer Lights
 {
-    float4 Directional;
-    float4 PointPositions[c_pointLightCount];
-    float4 PointColors[c_pointLightCount];
+	float4 Directional;
+	float4 PointPositions[c_pointLightCount];
+	float4 PointColors[c_pointLightCount];
 };
 
 //--------------------------------------------------------------------------------------
@@ -44,11 +44,11 @@ cbuffer Lights
 //--------------------------------------------------------------------------------------
 struct InstancedVertex
 {
-    float3 Position : POSITION; // Vertex position (per primitive)
-    float3 Normal : NORMAL; // Vertex normal (per primitive)
-    float4 InstRotation : I_ROTATION; // Orientation quaternion (per instance)
-    float4 InstPosScale : I_POSSCALE; // Position and scale (per instance)
-    float4 InstColor : I_COLOR; // Color (per instance)
+	float3 Position : POSITION; // Vertex position (per primitive)
+	float3 Normal : NORMAL; // Vertex normal (per primitive)
+	float4 InstRotation : I_ROTATION; // Orientation quaternion (per instance)
+	float4 InstPosScale : I_POSSCALE; // Position and scale (per instance)
+	float4 InstColor : I_COLOR; // Color (per instance)
 };
 
 //--------------------------------------------------------------------------------------
@@ -57,10 +57,10 @@ struct InstancedVertex
 //--------------------------------------------------------------------------------------
 struct Interpolants
 {
-    float4 Position : SV_POSITION;
-    float3 Normal : TEXCOORD0;
-    float4 Color : TEXCOORD1;
-    float3 WorldPos : TEXCOORD2;
+	float4 Position : SV_POSITION;
+	float3 Normal : TEXCOORD0;
+	float4 Color : TEXCOORD1;
+	float3 WorldPos : TEXCOORD2;
 };
 
 //--------------------------------------------------------------------------------------
@@ -69,7 +69,7 @@ struct Interpolants
 //--------------------------------------------------------------------------------------
 float3 RotateVectorByQuaternion(float4 Q, float3 V)
 {
-    return V + 2.0f * cross(Q.xyz, cross(Q.xyz, V) + Q.w * V);
+	return V + 2.0f * cross(Q.xyz, cross(Q.xyz, V) + Q.w * V);
 }
 
 //--------------------------------------------------------------------------------------
@@ -79,28 +79,28 @@ float3 RotateVectorByQuaternion(float4 Q, float3 V)
 [RootSignature(rootSig)]
 Interpolants VSMain(InstancedVertex In)
 {
-    Interpolants Out = (Interpolants) 0;
-    // Scale.
-    float3 position = In.Position * In.InstPosScale.w;
+	Interpolants Out = (Interpolants) 0;
+	// Scale.
+	float3 position = In.Position * In.InstPosScale.w;
 
-    // Rotate vertex position and normal based on instance quaternion...
-    position = RotateVectorByQuaternion(In.InstRotation, position);
-    float3 normal = RotateVectorByQuaternion(In.InstRotation, In.Normal);
+	// Rotate vertex position and normal based on instance quaternion...
+	position = RotateVectorByQuaternion(In.InstRotation, position);
+	float3 normal = RotateVectorByQuaternion(In.InstRotation, In.Normal);
 
-    // Move to world space.
-    position += In.InstPosScale.xyz;
+	// Move to world space.
+	position += In.InstPosScale.xyz;
 
-    // ...and clip.
-    Out.Position = mul(float4(position, 1), Clip);
+	// ...and clip.
+	Out.Position = mul(float4(position, 1), Clip);
 
-    // World space transform
-    Out.WorldPos = position;
-    
-    // Finally, output  normal and color
-    Out.Normal = normal;
-    Out.Color = In.InstColor;
-        
-    return Out;
+	// World space transform
+	Out.WorldPos = position;
+	
+	// Finally, output  normal and color
+	Out.Normal = normal;
+	Out.Color = In.InstColor;
+		
+	return Out;
 }
 
 //--------------------------------------------------------------------------------------
@@ -110,19 +110,19 @@ Interpolants VSMain(InstancedVertex In)
 [RootSignature(rootSig)]
 float4 PSMain(Interpolants In) : SV_Target
 {
-    float4 colorOut = 0;
+	float4 colorOut = 0;
 
-    // Directional component:
-    colorOut = saturate(dot(In.Normal, Directional.xyz)) * In.Color * 0.5;
+	// Directional component:
+	colorOut = saturate(dot(In.Normal, Directional.xyz)) * In.Color * 0.5;
 
-    for (uint i = 0; i < c_pointLightCount; ++i)
-    {
-        float3 pointDirection = PointPositions[i].xyz - In.WorldPos;
-        float d = length(pointDirection);
-        float attenuation = max(0, 1.0f - (dot(pointDirection, pointDirection) / 500));
-        pointDirection = normalize(pointDirection);
-        colorOut += saturate(dot(In.Normal, pointDirection)) * In.Color * PointColors[i] * attenuation;
-    }
+	for (uint i = 0; i < c_pointLightCount; ++i)
+	{
+		float3 pointDirection = PointPositions[i].xyz - In.WorldPos;
+		float d = length(pointDirection);
+		float attenuation = max(0, 1.0f - (dot(pointDirection, pointDirection) / 500));
+		pointDirection = normalize(pointDirection);
+		colorOut += saturate(dot(In.Normal, pointDirection)) * In.Color * PointColors[i] * attenuation;
+	}
 
-    return colorOut + ((sign(In.Color.a) * In.Color));
+	return colorOut + ((sign(In.Color.a) * In.Color));
 }

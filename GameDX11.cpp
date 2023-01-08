@@ -315,7 +315,7 @@ void GameDX11::Render()
 	context->IASetVertexBuffers(0, _countof(Strides), Buffers, Strides, Offsets);
 
 	// The per-instance data is referenced by index...
-	context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0);
+	context->IASetIndexBuffer(m_indexBuffer.Get(), DXGI_FORMAT_R32_UINT, 0);
 
 	// Apply the constants for the vertex and pixel shaders.
 	context->VSSetConstantBuffers(0, 1, m_vertexConstants.GetAddressOf());
@@ -394,7 +394,7 @@ void GameDX11::CreateDeviceDependentResources()
 	//m_ctrlFont = std::make_unique<SpriteFont>(device, L"XboxOneControllerLegendSmall.spritefont");
 
 	// Create input layout (must match declaration of Vertex).
-	static const D3D11_INPUT_ELEMENT_DESC inputElementDesc[] =
+	static const D3D11_INPUT_ELEMENT_DESC inputElementDesc[5] =
 	{
 		// SemanticName SemanticIndex   Format                          InputSlot AlignedByteOffset             InputSlotClass                    InstancedDataStepRate
 		{ "POSITION",   0,              DXGI_FORMAT_R32G32B32_FLOAT,    0,        0,                            D3D11_INPUT_PER_VERTEX_DATA,      0 },  // Vertex local position
