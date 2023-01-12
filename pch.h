@@ -126,7 +126,7 @@ namespace
     // Constants
     //--------------------------------------------------------------------------------------
     const uint32_t  c_maxInstances = 200000;
-    const uint32_t  c_startInstanceCount = 100;
+    const uint32_t  c_startInstanceCount = 500;
     const uint32_t  c_minInstanceCount = 1000;
     const float     c_boxBounds = 60.0f;
     size_t          c_cubeIndexCount = 36;
@@ -207,6 +207,6 @@ inline void PIXEndEvent(T*) {}
 #else
 // To use graphics and CPU markup events with the latest version of PIX, change this to include <pix3.h>
 // then add the NuGet package WinPixEventRuntime to the project.
-#include <pix.h>
+#include <pix3.h>
 #endif
 

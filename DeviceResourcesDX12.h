@@ -49,10 +49,10 @@ namespace DX
         auto                        GetDXGIFactory() const noexcept { return m_dxgiFactory.Get(); }
         HWND                        GetWindow() const noexcept { return m_window; }
         D3D_FEATURE_LEVEL           GetDeviceFeatureLevel() const noexcept { return m_d3dFeatureLevel; }
-        ID3D12Resource* GetRenderTarget() const noexcept { return m_renderTargets[m_backBufferIndex].Get(); }
-        ID3D12Resource* GetDepthStencil() const noexcept { return m_depthStencil.Get(); }
-        ID3D12CommandQueue* GetCommandQueue() const noexcept { return m_commandQueue.Get(); }
-        ID3D12CommandAllocator* GetCommandAllocator() const noexcept { return m_commandAllocators[m_backBufferIndex].Get(); }
+        ID3D12Resource*             GetRenderTarget() const noexcept { return m_renderTargets[m_backBufferIndex].Get(); }
+        ID3D12Resource*             GetDepthStencil() const noexcept { return m_depthStencil.Get(); }
+        ID3D12CommandQueue*         GetCommandQueue() const noexcept { return m_commandQueue.Get(); }
+        ID3D12CommandAllocator*     GetCommandAllocator() const noexcept { return m_commandAllocators[m_backBufferIndex].Get(); }
         auto                        GetCommandList() const noexcept { return m_commandList.Get(); }
         DXGI_FORMAT                 GetBackBufferFormat() const noexcept { return m_backBufferFormat; }
         DXGI_FORMAT                 GetDepthBufferFormat() const noexcept { return m_depthBufferFormat; }

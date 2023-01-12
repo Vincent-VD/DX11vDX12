@@ -248,7 +248,7 @@ void DeviceResourcesDX12::CreateDeviceResources()
 
     // Create a command list for recording graphics commands.
     ThrowIfFailed(m_d3dDevice->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[0].Get(), nullptr, IID_PPV_ARGS(m_commandList.ReleaseAndGetAddressOf())));
-    ThrowIfFailed(m_commandList->Close());
+    //ThrowIfFailed(m_commandList->Close());
 
     m_commandList->SetName(L"DeviceResourcesDX12");
 

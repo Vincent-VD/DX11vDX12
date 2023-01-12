@@ -94,13 +94,17 @@ private:
 
     // Direct3D 12 resources.
     Microsoft::WRL::ComPtr<ID3D12Resource>       m_vertexBuffer;
+    Microsoft::WRL::ComPtr<ID3D12Resource>       m_vertexBufferUpload;
     D3D12_VERTEX_BUFFER_VIEW                     m_vertexBufferView[3];
     Microsoft::WRL::ComPtr<ID3D12Resource>       m_indexBuffer;
+    Microsoft::WRL::ComPtr<ID3D12Resource>       m_indexBufferUpload;
     D3D12_INDEX_BUFFER_VIEW                      m_indexBufferView;
     Microsoft::WRL::ComPtr<ID3D12Resource>       m_boxColors;
+    Microsoft::WRL::ComPtr<ID3D12Resource>       m_boxColorsUpload;
 
     Microsoft::WRL::ComPtr<ID3D12Resource>       m_instanceData;
-    uint8_t* m_mappedInstanceData;
+   // Microsoft::WRL::ComPtr<ID3D12Resource>       m_instanceDataUpload;
+    uint8_t*                                     m_mappedInstanceData;
     D3D12_GPU_VIRTUAL_ADDRESS                    m_instanceDataGpuAddr;
 
     // A synchronization fence and an event. These members will be used

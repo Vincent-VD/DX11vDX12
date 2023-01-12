@@ -16,7 +16,7 @@ using namespace DirectX;
 namespace Game
 {
 	std::unique_ptr<BaseGame> g_game;
-	static RenderType g_RenderType{ RenderType::DirectX11 };
+	static RenderType g_RenderType{ RenderType::DirectX12 };
 
 }
 
@@ -70,7 +70,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 	//LoadResource(hInstance, MAKEINTRESOURCE(IDR_MENU1));
 
-	Game::g_game = std::make_unique<GameDX11>();
+	Game::g_game = std::make_unique<GameDX12>();
 
 	// Register class and create window
 	{

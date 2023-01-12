@@ -3,7 +3,9 @@
 
 #include <Windows.UI.Core.h>
 
+#include "DXSampleHelper.h"
 #include "Logger.h"
+#include "ModelManager.h"
 #include "ReadData.h"
 
 //
@@ -118,11 +120,11 @@ void GameDX12::Update(DX::StepTimer const& timer)
 
 		if (m_gamePadButtons.rightShoulder == GamePad::ButtonStateTracker::ButtonState::PRESSED)
 		{
-			m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 1000);
+			m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 100);
 		}
 		else if (m_gamePadButtons.leftShoulder == GamePad::ButtonStateTracker::ButtonState::PRESSED)
 		{
-			m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 1000);
+			m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 100);
 		}
 
 		if (pad.IsLeftStickPressed())
@@ -181,7 +183,7 @@ void GameDX12::Update(DX::StepTimer const& timer)
 
 	if (GetAsyncKeyState('R'))
 	{
-		m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 1000);
+		m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 100);
 		if(m_usedInstanceCount <= c_maxInstances)
 		{
 			std::cout << m_usedInstanceCount << std::endl;
@@ -189,7 +191,7 @@ void GameDX12::Update(DX::StepTimer const& timer)
 	}
 	if (GetAsyncKeyState('E'))
 	{
-		m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 1000);
+		m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 100);
 		if (m_usedInstanceCount <= c_maxInstances)
 		{
 			std::cout << m_usedInstanceCount << std::endl;
@@ -520,10 +522,13 @@ void GameDX12::CreateDeviceDependentResources()
 		device->CreateGraphicsPipelineState(&psoDesc,
 			IID_PPV_ARGS(m_pipelineState.ReleaseAndGetAddressOf())));
 
-	CD3DX12_HEAP_PROPERTIES heapUpload(D3D12_HEAP_TYPE_UPLOAD);
+	m_deviceResources->GetCommandList()->SetPipelineState(m_pipelineState.Get());
 
 	// Create and initialize the vertex buffer defining a cube.
 	{
+		CD3DX12_HEAP_PROPERTIES heapUpload(D3D12_HEAP_TYPE_UPLOAD);
+		CD3DX12_HEAP_PROPERTIES heapDefault(D3D12_HEAP_TYPE_DEFAULT);
+
 		static const Vertex s_vertexData[] =
 		{
 			{ XMFLOAT3(-1,  -1,  -1), XMFLOAT3(0,    0,  -1) },
@@ -557,47 +562,128 @@ void GameDX12::CreateDeviceDependentResources()
 			{ XMFLOAT3(1,   1,  -1), XMFLOAT3(0,    1,   0) },    // Y Positive face
 		};
 
+		std::vector<Vertex> verts{ ModelManager::GetInstance()->GetVerts() };
+
 		// Note: using upload heaps to transfer static data like vert buffers is not 
 		// recommended. Every time the GPU needs it, the upload heap will be marshalled 
 		// over. Please read up on Default Heap usage. An upload heap is used here for 
 		// code simplicity and because there are very few verts to actually transfer.
-		auto resDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(s_vertexData));
+		auto resDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(Vertex) * static_cast<uint32_t>(verts.size()));
 
 		DX::ThrowIfFailed(
-			device->CreateCommittedResource(&heapUpload,
+			device->CreateCommittedResource(
+				&heapDefault,
+				D3D12_HEAP_FLAG_NONE,
+				&resDesc,
+				D3D12_RESOURCE_STATE_COPY_DEST,
+				nullptr,
+				IID_PPV_ARGS(m_vertexBuffer.ReleaseAndGetAddressOf())));
+
+		m_vertexBuffer->SetName(L"Vertex Buffer");
+
+		DX::ThrowIfFailed(
+			device->CreateCommittedResource(
+				&heapUpload,
 				D3D12_HEAP_FLAG_NONE,
 				&resDesc,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				nullptr,
-				IID_PPV_ARGS(m_vertexBuffer.ReleaseAndGetAddressOf())));
+				IID_PPV_ARGS(m_vertexBufferUpload.ReleaseAndGetAddressOf())));
+
+		m_vertexBufferUpload->SetName(L"Vertex Upload Buffer");
+
+		// Copy data to the upload heap and then schedule a copy 
+		// from the upload heap to the vertex buffer.
+		D3D12_SUBRESOURCE_DATA vertexData{};
+		vertexData.pData = reinterpret_cast<BYTE*>(verts.data());
+		vertexData.RowPitch = sizeof(Vertex) * static_cast<uint32_t>(verts.size());
+		vertexData.SlicePitch = vertexData.RowPitch;
 
 		// Copy the triangle data to the vertex buffer.
-		UINT8* pVertexDataBegin;
-		CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
-		DX::ThrowIfFailed(
-			m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-		memcpy(pVertexDataBegin, s_vertexData, sizeof(s_vertexData));
-		m_vertexBuffer->Unmap(0, nullptr);
+		//UINT8* pVertexDataBegin;
+		//CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
+		//DX::ThrowIfFailed(
+		//	m_vertexBufferUpload->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
+		//memcpy(pVertexDataBegin, verts.data(), sizeof(Vertex) * static_cast<uint32_t>(verts.size()));
+		//m_vertexBufferUpload->Unmap(0, nullptr);
+
+		//m_deviceResources->GetCommandList()->CopyBufferRegion(m_vertexBuffer.Get(), 0, m_vertexBufferUpload.Get(), 0, sizeof(Vertex)* static_cast<uint32_t>(verts.size()));
+		//m_deviceResources->GetCommandList()->CopyResource(m_vertexBuffer.Get(), m_vertexBufferUpload.Get());
+
+		PIXBeginEvent(m_deviceResources->GetCommandList(), 0, L"Copy vertex buffer data to default resource...");
+		
+		auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+													 D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER) };
+
+		UpdateSubresources<1>(m_deviceResources->GetCommandList(), m_vertexBuffer.Get(), m_vertexBufferUpload.Get(), 0, 0, 1, &vertexData);
+		m_deviceResources->GetCommandList()->ResourceBarrier(1, &transition);
+
+		PIXEndEvent(m_deviceResources->GetCommandList());
+
+		// Copy the triangle data to the vertex buffer.
+		//UINT8* pVertexDataBegin;
+		//CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
+		//DX::ThrowIfFailed(
+		//	m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
+		//memcpy(pVertexDataBegin, verts.data(), sizeof(Vertex) * static_cast<uint32_t>(verts.size()));
+		//m_vertexBuffer->Unmap(0, nullptr);
 
 		// Initialize the vertex buffer view.
 		m_vertexBufferView[0].BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
 		m_vertexBufferView[0].StrideInBytes = sizeof(Vertex);
-		m_vertexBufferView[0].SizeInBytes = sizeof(s_vertexData);
+		m_vertexBufferView[0].SizeInBytes = sizeof(Vertex) * static_cast<uint32_t>(verts.size());
 	}
 
 	// Create vertex buffer memory for per-instance data.
 	{
+		D3D12_HEAP_PROPERTIES defaultHeap{ D3D12_HEAP_TYPE_DEFAULT };
 		const D3D12_HEAP_PROPERTIES uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 		size_t cbSize = c_maxInstances * m_deviceResources->GetBackBufferCount() * sizeof(Instance);
-
 		const D3D12_RESOURCE_DESC instanceBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(cbSize);
-		DX::ThrowIfFailed(device->CreateCommittedResource(
-			&uploadHeapProperties,
+
+		/*DX::ThrowIfFailed(device->CreateCommittedResource(
+			&defaultHeap,
 			D3D12_HEAP_FLAG_NONE,
 			&instanceBufferDesc,
-			D3D12_RESOURCE_STATE_GENERIC_READ,
+			D3D12_RESOURCE_STATE_COPY_DEST,
 			nullptr,
 			IID_PPV_ARGS(m_instanceData.ReleaseAndGetAddressOf())));
+
+		NAME_D3D12_OBJECT(m_instanceData);*/
+		{
+			DX::ThrowIfFailed(device->CreateCommittedResource(
+				&uploadHeapProperties,
+				D3D12_HEAP_FLAG_NONE,
+				&instanceBufferDesc,
+				D3D12_RESOURCE_STATE_GENERIC_READ,
+				nullptr,
+				IID_PPV_ARGS(m_instanceData.ReleaseAndGetAddressOf())));
+
+			m_instanceData->SetName(L"Instance Buffer");
+
+			/*Instance inst[] = {XMFLOAT4{1.f, 1.f, 1.f, 1}, XMFLOAT4{1, 1, 1, 1}};
+
+			D3D12_SUBRESOURCE_DATA instanceData{};
+			instanceData.pData = inst;
+			instanceData.RowPitch = sizeof(inst);
+			instanceData.SlicePitch = instanceData.RowPitch;
+
+			PIXBeginEvent(m_deviceResources->GetCommandList(), 0, L"Copy vertex buffer data to default resource...");
+
+			auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_instanceData.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+														 D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER) };
+
+
+			UpdateSubresources<1>(m_deviceResources->GetCommandList(), m_instanceData.Get(), m_instanceDataUpload.Get(), 0, 0, 1, nullptr);
+			m_deviceResources->GetCommandList()->ResourceBarrier(1, &transition);
+
+			PIXEndEvent(m_deviceResources->GetCommandList());*/
+		}
+
+		/*m_vertexBufferView[1].BufferLocation = m_instanceData->GetGPUVirtualAddress();
+		m_vertexBufferView[1].StrideInBytes = sizeof(Instance);
+		m_vertexBufferView[1].SizeInBytes = cbSize;*/
+		
 
 		DX::ThrowIfFailed(m_instanceData->Map(0, nullptr, reinterpret_cast<void**>(&m_mappedInstanceData)));
 
@@ -622,23 +708,54 @@ void GameDX12::CreateDeviceDependentResources()
 			}
 		}
 
+		CD3DX12_HEAP_PROPERTIES heapUpload(D3D12_HEAP_TYPE_UPLOAD);
+		CD3DX12_HEAP_PROPERTIES heapDefault(D3D12_HEAP_TYPE_DEFAULT);
 		auto resDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(uint32_t) * c_maxInstances);
 
 		DX::ThrowIfFailed(
-			device->CreateCommittedResource(&heapUpload,
+			device->CreateCommittedResource(
+				&heapDefault,
 				D3D12_HEAP_FLAG_NONE,
 				&resDesc,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_COPY_DEST,
 				nullptr,
 				IID_PPV_ARGS(m_boxColors.ReleaseAndGetAddressOf())));
+		m_boxColors->SetName(L"Color Buffer");
+		{
+			DX::ThrowIfFailed(
+				device->CreateCommittedResource(
+					&heapUpload,
+					D3D12_HEAP_FLAG_NONE,
+					&resDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					nullptr,
+					IID_PPV_ARGS(m_boxColorsUpload.ReleaseAndGetAddressOf())));
+			m_boxColorsUpload->SetName(L"Color Upload Buffer");
 
+			D3D12_SUBRESOURCE_DATA colorData{};
+			colorData.pData = reinterpret_cast<BYTE*>(colors);
+			colorData.RowPitch = sizeof(uint32_t) * c_maxInstances;
+			colorData.SlicePitch = colorData.RowPitch;
+
+			PIXBeginEvent(m_deviceResources->GetCommandList(), 0, L"Copy vertex buffer data to default resource...");
+
+			auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_boxColors.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+														 D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER) };
+
+
+			UpdateSubresources<1>(m_deviceResources->GetCommandList(), m_boxColors.Get(), m_boxColorsUpload.Get(), 0, 0, 1, &colorData);
+			m_deviceResources->GetCommandList()->ResourceBarrier(1, &transition);
+
+			PIXEndEvent(m_deviceResources->GetCommandList());
+
+		}
 		// Copy the color data to the vertex buffer.
-		UINT8* pVertexDataBegin;
-		CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
-		DX::ThrowIfFailed(
-			m_boxColors->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-		memcpy(pVertexDataBegin, colors, sizeof(uint32_t) * c_maxInstances);
-		m_boxColors->Unmap(0, nullptr);
+		//UINT8* pVertexDataBegin;
+		//CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
+		//DX::ThrowIfFailed(
+		//	m_boxColors->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
+		//memcpy(pVertexDataBegin, colors, sizeof(uint32_t) * c_maxInstances);
+		//m_boxColors->Unmap(0, nullptr);
 
 		// Initialize the vertex buffer view.
 		m_vertexBufferView[2].BufferLocation = m_boxColors->GetGPUVirtualAddress();
@@ -664,30 +781,64 @@ void GameDX12::CreateDeviceDependentResources()
 			20, 23, 22,
 		};
 
+		std::vector<uint32_t> indcs{ ModelManager::GetInstance()->GetIndices() };
+		c_cubeIndexCount = static_cast<uint32_t>(indcs.size());
+
 		// See note above
-		auto resDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(s_indexData));
+		CD3DX12_HEAP_PROPERTIES heapUpload(D3D12_HEAP_TYPE_UPLOAD);
+		CD3DX12_HEAP_PROPERTIES heapDefault(D3D12_HEAP_TYPE_DEFAULT);
+		auto resDesc = CD3DX12_RESOURCE_DESC::Buffer(sizeof(uint32_t) * static_cast<uint32_t>(indcs.size()));
 
 		DX::ThrowIfFailed(
-			device->CreateCommittedResource(&heapUpload,
+			device->CreateCommittedResource(
+				&heapDefault,
 				D3D12_HEAP_FLAG_NONE,
 				&resDesc,
-				D3D12_RESOURCE_STATE_GENERIC_READ,
+				D3D12_RESOURCE_STATE_COPY_DEST,
 				nullptr,
 				IID_PPV_ARGS(m_indexBuffer.ReleaseAndGetAddressOf())));
 
+		m_indexBuffer->SetName(L"Index Buffer");
+
+		{
+			DX::ThrowIfFailed(
+				device->CreateCommittedResource(
+					&heapUpload,
+					D3D12_HEAP_FLAG_NONE,
+					&resDesc,
+					D3D12_RESOURCE_STATE_GENERIC_READ,
+					nullptr,
+					IID_PPV_ARGS(m_indexBufferUpload.ReleaseAndGetAddressOf())));
+
+			D3D12_SUBRESOURCE_DATA indexData{};
+			indexData.pData = reinterpret_cast<BYTE*>(indcs.data());
+			/*indexData.RowPitch = sizeof(uint32_t) * static_cast<uint32_t>(indcs.size());
+			indexData.SlicePitch = indexData.RowPitch;*/
+
+			auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_indexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER) };
+
+			UpdateSubresources<1>(m_deviceResources->GetCommandList(), m_indexBuffer.Get(), m_indexBufferUpload.Get(), 0, 0, 1, &indexData);
+			m_deviceResources->GetCommandList()->ResourceBarrier(1, &transition);
+
+		}
+
 		// Copy the data to the index buffer.
-		uint8_t* pVertexDataBegin;
-		CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
-		DX::ThrowIfFailed(
-			m_indexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-		memcpy(pVertexDataBegin, s_indexData, sizeof(s_indexData));
-		m_indexBuffer->Unmap(0, nullptr);
+		//uint8_t* pVertexDataBegin;
+		//CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
+		//DX::ThrowIfFailed(
+		//	m_indexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
+		//memcpy(pVertexDataBegin, indcs.data(), sizeof(uint32_t)* static_cast<uint32_t>(indcs.size()));
+		//m_indexBuffer->Unmap(0, nullptr);
 
 		// Initialize the index buffer view.
 		m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
-		m_indexBufferView.Format = DXGI_FORMAT_R16_UINT;
-		m_indexBufferView.SizeInBytes = sizeof(s_indexData);
+		m_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
+		m_indexBufferView.SizeInBytes = sizeof(uint32_t) * static_cast<uint32_t>(indcs.size());
 	}
+
+	ThrowIfFailed(m_deviceResources->GetCommandList()->Close());
+	ID3D12CommandList* ppCommandLists[] = { m_deviceResources->GetCommandList() };
+	m_deviceResources->GetCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
 	m_CPUInstanceData.reset(new Instance[c_maxInstances]);
 	m_rotationQuaternions.reset(reinterpret_cast<XMVECTOR*>(_aligned_malloc(sizeof(XMVECTOR) * c_maxInstances, 16)));
@@ -696,8 +847,8 @@ void GameDX12::CreateDeviceDependentResources()
 	// Set up the position and scale for the container box. Scale is negative to turn the box inside-out 
 	// (this effectively reverses the normals and backface culling).
 	// Scale the outside box to slightly larger than our scene boundary, so bouncing boxes never actually clip it.
-	m_CPUInstanceData[0].positionAndScale = XMFLOAT4(0.0f, 0.0f, 0.0f, -(c_boxBounds + 5));
-	m_CPUInstanceData[0].quaternion = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	//m_CPUInstanceData[0].positionAndScale = XMFLOAT4(0.0f, 0.0f, 0.0f, -(c_boxBounds + 5));
+	//m_CPUInstanceData[0].quaternion = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// Initialize the directional light.
 	XMStoreFloat4(&m_lights.directional, XMVector3Normalize(XMVectorSet(1.0f, 4.0f, -2.0f, 0)));
@@ -706,8 +857,8 @@ void GameDX12::CreateDeviceDependentResources()
 	ResetSimulation();
 
 	// Wait until assets have been uploaded to the GPU.
-	auto uploadResourcesFinished = resourceUpload.End(m_deviceResources->GetCommandQueue());
-	uploadResourcesFinished.wait();
+	//auto uploadResourcesFinished = resourceUpload.End(m_deviceResources->GetCommandQueue());
+	//uploadResourcesFinished.wait();
 
 	// Create a fence for synchronizing between the CPU and the GPU
 	DX::ThrowIfFailed(device->CreateFence(m_deviceResources->GetCurrentFrameIndex(), D3D12_FENCE_FLAG_NONE,
@@ -740,7 +891,7 @@ void GameDX12::ResetSimulation()
 	// Note that instance 0 is the scene bounding box, and the position, orientation and scale are static (i.e. never update).
 	for (size_t i = 1; i < c_maxInstances; ++i)
 	{
-		m_CPUInstanceData[i].positionAndScale = XMFLOAT4(0.0f, 0.0f, c_boxBounds / 2.0f, FloatRand(0.1f, 0.4f));
+		m_CPUInstanceData[i].positionAndScale = XMFLOAT4(0.0f, 0.0f, c_boxBounds / 2.0f, FloatRand(40.f, 45.f));
 		m_CPUInstanceData[i].quaternion = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 		// For the first c_pointLightCount in the updated array, we scale up by a small factor so they stand out.

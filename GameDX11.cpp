@@ -8,6 +8,7 @@
 #include <Windows.UI.Core.h>
 
 #include "Logger.h"
+#include "ModelManager.h"
 #include "DirectXTK11/Inc/SimpleMath.h"
 #include "ReadData.h"
 
@@ -424,10 +425,8 @@ void GameDX11::CreateDeviceDependentResources()
 			device->CreatePixelShader(shaderBytecode.data(), shaderBytecode.size(), nullptr, m_pixelShader.ReleaseAndGetAddressOf())
 		);
 	}
-	std::vector<Vertex> verts{}; //vertex, normal (index)
-	std::vector<uint32_t> indcs{};
 
-	OBJ::ParseOBJ("files/stanford_dragon.obj", verts, indcs);
+	//OBJ::ParseOBJ("files/stanford_dragon.obj", verts, indcs);
 	// Create and initialize the vertex buffer defining a cube.
 	{
 
@@ -465,6 +464,8 @@ void GameDX11::CreateDeviceDependentResources()
 		};
 
 		//const std::vector<Vertex> vertexes{ OBJ::ConvertPointsToVertex(verts, positions, normals) };
+
+		std::vector<Vertex> verts{ ModelManager::GetInstance()->GetVerts() };
 
 		D3D11_SUBRESOURCE_DATA initialData = { verts.data() };
 
@@ -532,6 +533,7 @@ void GameDX11::CreateDeviceDependentResources()
 			20, 23, 22,
 		};
 
+		std::vector<uint32_t> indcs{ ModelManager::GetInstance()->GetIndices() };
 		c_cubeIndexCount = static_cast<uint32_t>(indcs.size());
 
 		D3D11_SUBRESOURCE_DATA initialData = { indcs.data() };
@@ -614,7 +616,7 @@ void GameDX11::ResetSimulation()
 	//m_usedInstanceCount = c_minInstanceCount;
 	for (size_t i = 0; i < c_maxInstances; ++i)
 	{
-		m_CPUInstanceData[i].positionAndScale = XMFLOAT4(0.0f, 0.0f, c_boxBounds / 2.0f, FloatRand(60.f, 70.f));
+		m_CPUInstanceData[i].positionAndScale = XMFLOAT4(0.0f, 0.0f, c_boxBounds / 2.0f, FloatRand(40.f, 45.f));
 		m_CPUInstanceData[i].quaternion = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
 
 		// For the first c_pointLightCount in the updated array, we scale up by a small factor so they stand out, and

@@ -26,6 +26,9 @@
     <Filter Include="Logger">
       <UniqueIdentifier>{8e37721d-a3cf-44b6-867e-9c0813e3aa68}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ModelManager">
+      <UniqueIdentifier>{b2f302da-55af-410e-945d-328ec2abee85}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -114,6 +117,9 @@
     <ClInclude Include="Logger.h">
       <Filter>Logger</Filter>
     </ClInclude>
+    <ClInclude Include="ModelManager.h">
+      <Filter>ModelManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
@@ -135,6 +141,9 @@
     </ClCompile>
     <ClCompile Include="Logger.cpp">
       <Filter>Logger</Filter>
+    </ClCompile>
+    <ClCompile Include="ModelManager.cpp">
+      <Filter>ModelManager</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +171,7 @@
     <None Include="SampleInstancing.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PixelShader.hlsl">
