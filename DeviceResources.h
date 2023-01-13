@@ -88,28 +88,28 @@ namespace DX
         Microsoft::WRL::ComPtr<ID3DUserDefinedAnnotation>   m_d3dAnnotation;
 
         // Direct3D rendering objects. Required for 3D.
-        Microsoft::WRL::ComPtr<ID3D11Texture2D>         m_renderTarget;
-        Microsoft::WRL::ComPtr<ID3D11Texture2D>         m_depthStencil;
-        Microsoft::WRL::ComPtr<ID3D11RenderTargetView>  m_d3dRenderTargetView;
-        Microsoft::WRL::ComPtr<ID3D11DepthStencilView>  m_d3dDepthStencilView;
-        D3D11_VIEWPORT                                  m_screenViewport;
+        Microsoft::WRL::ComPtr<ID3D11Texture2D>             m_renderTarget;
+        Microsoft::WRL::ComPtr<ID3D11Texture2D>             m_depthStencil;
+        Microsoft::WRL::ComPtr<ID3D11RenderTargetView>      m_d3dRenderTargetView;
+        Microsoft::WRL::ComPtr<ID3D11DepthStencilView>      m_d3dDepthStencilView;
+        D3D11_VIEWPORT                                      m_screenViewport;
 
         // Direct3D properties.
-        DXGI_FORMAT                                     m_backBufferFormat;
-        DXGI_FORMAT                                     m_depthBufferFormat;
-        UINT                                            m_backBufferCount;
-        D3D_FEATURE_LEVEL                               m_d3dMinFeatureLevel;
+        DXGI_FORMAT                                         m_backBufferFormat;
+        DXGI_FORMAT                                         m_depthBufferFormat;
+        UINT                                                m_backBufferCount;
+        D3D_FEATURE_LEVEL                                   m_d3dMinFeatureLevel;
 
         // Cached device properties.
-        HWND                                            m_window;
-        D3D_FEATURE_LEVEL                               m_d3dFeatureLevel;
-        RECT                                            m_outputSize;
+        HWND                                                m_window;
+        D3D_FEATURE_LEVEL                                   m_d3dFeatureLevel;
+        RECT                                                m_outputSize;
 
         // HDR Support
-        DXGI_COLOR_SPACE_TYPE                           m_colorSpace;
+        DXGI_COLOR_SPACE_TYPE                               m_colorSpace;
 
-        // DeviceResourcesDX12 options (see flags above)
-        unsigned int                                    m_options;
+        // DeviceResourcesDX12 options (see flags above)    
+        unsigned int                                        m_options;
 
         // The IDeviceNotify can be held directly as it owns the DeviceResourcesDX12.
         IDeviceNotify* m_deviceNotify;
