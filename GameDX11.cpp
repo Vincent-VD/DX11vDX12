@@ -333,22 +333,13 @@ void GameDX11::Render()
 	auto size = m_deviceResources->GetOutputSize();
 	auto safe = SimpleMath::Viewport::ComputeTitleSafeArea(size.right, size.bottom);
 
+	std::cout << safe.left << "  " << safe.top << std::endl;
+
 	m_batch->Begin();
 
 	wchar_t str[32] = {};
 	swprintf_s(str, L"Instancing count: %u", m_usedInstanceCount);
-	//m_smallFont->DrawString(m_batch.get(), str, XMFLOAT2(float(safe.left), float(safe.top)), Colors::White);
-
-	const wchar_t* legend = m_gamepadPresent
-		? L"[LThumb] Rotate   [A] Reset   [LB]/[RB] Change instance count   [View] Exit"
-		: L"WASD/Left Mouse Button: Rotate   Q/E: Change instance count   Home: Center   Space: Reset   Esc: Exit";
-
-	//DX::DrawControllerString(m_batch.get(),
-	//    m_smallFont.get(), m_ctrlFont.get(),
-	//    legend,
-	//    XMFLOAT2(float(safe.left),
-	//        float(safe.bottom) - m_smallFont->GetLineSpacing()),
-	//    ATG::Colors::LightGrey);
+	m_smallFont->DrawString(m_batch.get(), str, XMFLOAT2(float(safe.left), float(safe.top)), Colors::LightGray);
 
 	m_batch->End();
 
@@ -391,7 +382,7 @@ void GameDX11::CreateDeviceDependentResources()
 	auto context = m_deviceResources->GetD3DDeviceContext();
 	m_batch = std::make_unique<SpriteBatch>(context);
 
-	//m_smallFont = std::make_unique<SpriteFont>(device, L"SegoeUI_18.spritefont");
+	m_smallFont = std::make_unique<SpriteFont>(device, L"files/SegoeUI_18.spritefont");
 	//m_ctrlFont = std::make_unique<SpriteFont>(device, L"XboxOneControllerLegendSmall.spritefont");
 
 	// Create input layout (must match declaration of Vertex).

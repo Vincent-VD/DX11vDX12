@@ -357,22 +357,13 @@ void GameDX12::Render()
 	auto size = m_deviceResources->GetOutputSize();
 	auto safe = SimpleMath::Viewport::ComputeTitleSafeArea(size.right, size.bottom);
 
+	std::cout << safe.left << "  " << safe.top << std::endl;
+
 	m_batch->Begin(commandList);
 
 	wchar_t str[32] = {};
 	swprintf_s(str, L"Instancing count: %u", m_usedInstanceCount);
-	//m_smallFont->DrawString(m_batch.get(), str, XMFLOAT2(float(safe.left), float(safe.top)), Colors::White);
-
-	const wchar_t* legend = m_gamepadPresent
-		? L"[LThumb] Rotate   [A] Reset   [LB]/[RB] Change instance count   [View] Exit"
-		: L"WASD/Left Mouse Button: Rotate   Q/E: Change instance count   Home: Center   Space: Reset   Esc: Exit";
-
-	//DX::DrawControllerString(m_batch.get(),
-	//    m_smallFont.get(), m_ctrlFont.get(),
-	//    legend,
-	//    XMFLOAT2(float(safe.left),
-	//        float(safe.bottom) - m_smallFont->GetLineSpacing()),
-	//    ATG::Colors::LightGrey);
+	m_smallFont->DrawString(m_batch.get(), str, XMFLOAT2(float(safe.left), float(safe.top)), Colors::LightGray);
 
 	m_batch->End();
 
@@ -388,24 +379,6 @@ void GameDX12::Render()
 
 	PIXEndEvent(m_deviceResources->GetCommandQueue());
 }
-
-//void GameDX12::PopulateCommandList()
-//{
-//
-//    CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_rtvDescriptorHeap->GetCPUDescriptorHandleForHeapStart(), m_swapBufferCount, m_rtvDescriptorSize);
-//    m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
-//
-//    // Record commands.
-//    const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-//    m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-//    m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-//    m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-//    m_commandList->DrawInstanced(3, 1, 0, 0);
-//
-//    DX::ThrowIfFailed(m_commandList->Close());
-//
-//}
-
 
 // Helper method to prepare the command list for rendering and clear the back buffers.
 void GameDX12::Clear()
@@ -452,10 +425,10 @@ void GameDX12::CreateDeviceDependentResources()
 		m_batch = std::make_unique<SpriteBatch>(device, resourceUpload, pd);
 	}
 
-	//m_smallFont = std::make_unique<SpriteFont>(device, resourceUpload,
-	//	L"SegoeUI_18.spritefont",
-	//	m_resourceDescriptors->GetCpuHandle(Descriptors::TextFont),
-	//	m_resourceDescriptors->GetGpuHandle(Descriptors::TextFont));
+	m_smallFont = std::make_unique<SpriteFont>(device, resourceUpload,
+		L"files/SegoeUI_18.spritefont",
+		m_resourceDescriptors->GetCpuHandle(Descriptors::TextFont),
+		m_resourceDescriptors->GetGpuHandle(Descriptors::TextFont));
 	//
 	//m_ctrlFont = std::make_unique<SpriteFont>(device, resourceUpload,
 	//	L"XboxOneControllerLegendSmall.spritefont",
@@ -598,17 +571,6 @@ void GameDX12::CreateDeviceDependentResources()
 		vertexData.pData = reinterpret_cast<BYTE*>(verts.data());
 		vertexData.RowPitch = sizeof(Vertex) * static_cast<uint32_t>(verts.size());
 		vertexData.SlicePitch = vertexData.RowPitch;
-
-		// Copy the triangle data to the vertex buffer.
-		//UINT8* pVertexDataBegin;
-		//CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
-		//DX::ThrowIfFailed(
-		//	m_vertexBufferUpload->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-		//memcpy(pVertexDataBegin, verts.data(), sizeof(Vertex) * static_cast<uint32_t>(verts.size()));
-		//m_vertexBufferUpload->Unmap(0, nullptr);
-
-		//m_deviceResources->GetCommandList()->CopyBufferRegion(m_vertexBuffer.Get(), 0, m_vertexBufferUpload.Get(), 0, sizeof(Vertex)* static_cast<uint32_t>(verts.size()));
-		//m_deviceResources->GetCommandList()->CopyResource(m_vertexBuffer.Get(), m_vertexBufferUpload.Get());
 
 		PIXBeginEvent(m_deviceResources->GetCommandList(), 0, L"Copy vertex buffer data to default resource...");
 		
