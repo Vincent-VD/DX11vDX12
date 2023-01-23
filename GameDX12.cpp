@@ -21,51 +21,33 @@ using Microsoft::WRL::ComPtr;
 
 GameDX12::GameDX12() noexcept :
 	BaseGame(),
-	m_gamepadPresent(false),
-	m_mappedInstanceData(nullptr),
-	m_instanceDataGpuAddr(0),
-	m_usedInstanceCount(c_startInstanceCount),
-	m_lights{},
-	m_pitch(0.0f),
-	m_yaw(0.0f)
+	m_MappedInstanceData(nullptr),
+	m_InstanceDataGpuAddr(0),
+	m_UsedInstanceCount(c_startInstanceCount),
+	m_Lights{},
+	m_Pitch(0.0f),
+	m_Yaw(0.0f)
 {
-	XMStoreFloat4x4(&m_proj, XMMatrixIdentity());
+	XMStoreFloat4x4(&m_Proj, XMMatrixIdentity());
 
 	// Use gamma-correct rendering.
-	m_deviceResources = std::make_unique<DX::DeviceResourcesDX12>(DXGI_FORMAT_B8G8R8A8_UNORM_SRGB);
-	m_deviceResources->RegisterDeviceNotify(this);
+	m_DeviceResources = std::make_unique<DX::DeviceResourcesDX12>(DXGI_FORMAT_B8G8R8A8_UNORM_SRGB);
+	m_DeviceResources->RegisterDeviceNotify(this);
 }
-
-//GameDX12::~GameDX12()
-//{
-//    // Ensure that the GPU is no longer referencing resources that are about to be destroyed.
-//    if (m_deviceResources)
-//    {
-//        m_deviceResources->WaitForGpu();
-//    }
-//}
 
 // Initialize the Direct3D resources required to run.
 void GameDX12::Initialize(HWND window, int width, int height)
 {
-	m_gamePad = std::make_unique<GamePad>();
+	m_DeviceResources->SetWindow(window, width, height);
 
-   // m_keyboard = std::make_unique<Keyboard>();
-	//m_keyboard->SetWindow(reinterpret_cast<ABI::Windows::UI::Core::ICoreWindow*>(window));
-
-	m_mouse = std::make_unique<Mouse>();
-	m_mouse->SetWindow(window);
-
-	m_deviceResources->SetWindow(window, width, height);
-
-	m_deviceResources->CreateDeviceResources();
+	m_DeviceResources->CreateDeviceResources();
 	CreateDeviceDependentResources();
 
-	m_deviceResources->CreateWindowSizeDependentResources();
+	m_DeviceResources->CreateWindowSizeDependentResources();
 	CreateWindowSizeDependentResources();
 
-	m_fenceEvent.Attach(CreateEvent(nullptr, FALSE, FALSE, nullptr));
-	if (!m_fenceEvent.IsValid())
+	m_FenceEvent.Attach(CreateEvent(nullptr, FALSE, FALSE, nullptr));
+	if (!m_FenceEvent.IsValid())
 	{
 		throw std::exception("CreateEvent");
 	}
@@ -74,12 +56,12 @@ void GameDX12::Initialize(HWND window, int width, int height)
 // Executes the basic GameDX12 loop.
 void GameDX12::Tick()
 {
-	m_timer.Tick([&]()
+	m_Timer.Tick([&]()
 	{
-		Update(m_timer);
-		if (Logger::GetInstance()->Update(m_timer))
+		Update(m_Timer);
+		if (Logger::GetInstance()->Update(m_Timer))
 		{
-			Logger::GetInstance()->Log(m_timer, nullptr, this);
+			Logger::GetInstance()->Log(m_Timer, nullptr, this);
 		}
 	});
 
@@ -102,79 +84,21 @@ void GameDX12::Update(DX::StepTimer const& timer)
 	up = std::max(0.f, std::min(up, 1.f));
 	down = std::max(0.f, std::min(down, 1.f));
 
-	auto pad = m_gamePad->GetState(0);
-	m_gamepadPresent = pad.IsConnected();
-	if (pad.IsConnected())
+	if ((left > 0.f) || (right > 0.f))
 	{
-		m_gamePadButtons.Update(pad);
-
-		if (pad.IsViewPressed())
-		{
-			ExitGame();
-		}
-
-		if (m_gamePadButtons.a == GamePad::ButtonStateTracker::ButtonState::PRESSED)
-		{
-			ResetSimulation();
-		}
-
-		if (m_gamePadButtons.rightShoulder == GamePad::ButtonStateTracker::ButtonState::PRESSED)
-		{
-			m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 100);
-		}
-		else if (m_gamePadButtons.leftShoulder == GamePad::ButtonStateTracker::ButtonState::PRESSED)
-		{
-			m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 100);
-		}
-
-		if (pad.IsLeftStickPressed())
-		{
-			m_yaw = m_pitch = 0.f;
-		}
-		else
-		{
-			m_yaw += pad.thumbSticks.leftX * 0.1f;
-			m_pitch += pad.thumbSticks.leftY * 0.1f;
-		}
+		m_Yaw += ((right > 0.f) ? -0.1f : 0.1f);
 	}
-	else
+
+	if ((up > 0.f) || (down > 0.f))
 	{
-		m_gamePadButtons.Reset();
-
-		if ((left > 0.f) || (right > 0.f))
-		{
-			m_yaw += ((right > 0.f) ? -0.1f : 0.1f);
-		}
-
-		if ((up > 0.f) || (down > 0.f))
-		{
-			m_pitch += ((down > 0.f) ? 0.1f : -0.1f);
-		}
-
-		if (GetAsyncKeyState(VK_HOME))
-		{
-			m_yaw = m_pitch = 0.f;
-		}
-
-		// Basic mouse-look
-		auto mouse = m_mouse->GetState();
-		if (mouse.positionMode == Mouse::MODE_RELATIVE)
-		{
-			if (!mouse.leftButton)
-			{
-				m_mouse->SetMode(Mouse::MODE_ABSOLUTE);
-			}
-			else
-			{
-				m_pitch -= mouse.y * c_rotationGain;
-				m_yaw += mouse.x * c_rotationGain;
-			}
-		}
-		else if (mouse.leftButton)
-		{
-			m_mouse->SetMode(Mouse::MODE_RELATIVE);
-		}
+		m_Pitch += ((down > 0.f) ? 0.1f : -0.1f);
 	}
+
+	if (GetAsyncKeyState(VK_HOME))
+	{
+		m_Yaw = m_Pitch = 0.f;
+	}
+	
 
 	if (GetAsyncKeyState(VK_ESCAPE))
 	{
@@ -183,62 +107,62 @@ void GameDX12::Update(DX::StepTimer const& timer)
 
 	if (GetAsyncKeyState('R'))
 	{
-		m_usedInstanceCount = std::max(c_minInstanceCount, m_usedInstanceCount - 100);
-		if(m_usedInstanceCount <= c_maxInstances)
+		m_UsedInstanceCount = std::max(c_minInstanceCount, m_UsedInstanceCount - 100);
+		if(m_UsedInstanceCount <= c_maxInstances)
 		{
-			std::cout << m_usedInstanceCount << std::endl;
+			std::cout << m_UsedInstanceCount << std::endl;
 		}
 	}
 	if (GetAsyncKeyState('E'))
 	{
-		m_usedInstanceCount = std::min(c_maxInstances, m_usedInstanceCount + 100);
-		if (m_usedInstanceCount <= c_maxInstances)
+		m_UsedInstanceCount = std::min(c_maxInstances, m_UsedInstanceCount + 100);
+		if (m_UsedInstanceCount <= c_maxInstances)
 		{
-			std::cout << m_usedInstanceCount << std::endl;
+			std::cout << m_UsedInstanceCount << std::endl;
 		}
 	}
 
 	if (GetAsyncKeyState(VK_SPACE))
 	{
 		ResetSimulation();
-		if (m_usedInstanceCount <= c_maxInstances)
+		if (m_UsedInstanceCount <= c_maxInstances)
 		{
-			std::cout << m_usedInstanceCount << std::endl;
+			std::cout << m_UsedInstanceCount << std::endl;
 		}
 	}
 
 	// Limit to avoid looking directly up or down
 	const float limit = XM_PI / 2.0f - 0.01f;
-	m_pitch = std::max(-limit, std::min(+limit, m_pitch));
+	m_Pitch = std::max(-limit, std::min(+limit, m_Pitch));
 
-	if (m_yaw > XM_PI)
+	if (m_Yaw > XM_PI)
 	{
-		m_yaw -= XM_PI * 2.f;
+		m_Yaw -= XM_PI * 2.f;
 	}
-	else if (m_yaw < -XM_PI)
+	else if (m_Yaw < -XM_PI)
 	{
-		m_yaw += XM_PI * 2.f;
+		m_Yaw += XM_PI * 2.f;
 	}
 
 	XMVECTOR lookAt = XMVectorSet(
-		sinf(m_yaw),
-		m_pitch,
-		cosf(m_yaw),
+		sinf(m_Yaw),
+		m_Pitch,
+		cosf(m_Yaw),
 		0);
 
 	// Update transforms.
 	XMMATRIX camera = XMMatrixLookAtLH(g_XMZero, lookAt, g_XMIdentityR1);
-	XMMATRIX proj = XMLoadFloat4x4(&m_proj);
+	XMMATRIX proj = XMLoadFloat4x4(&m_Proj);
 	XMMATRIX clip = XMMatrixTranspose(XMMatrixMultiply(camera, proj));
-	XMStoreFloat4x4(&m_clip, clip);
+	XMStoreFloat4x4(&m_Clip, clip);
 
 	// Update instance data for the next frame.
-	for (size_t i = 1; i < m_usedInstanceCount; ++i)
+	for (size_t i = 1; i < m_UsedInstanceCount; ++i)
 	{
 		// Update positions...
 		float velocityMultiplier = i <= c_pointLightCount ? 5.0f * c_velocityMultiplier : c_velocityMultiplier;
 		XMVECTOR position = XMLoadFloat4(&m_CPUInstanceData[i].positionAndScale);
-		position += m_velocities[i] * elapsedTime * velocityMultiplier;
+		position += m_Velocities[i] * elapsedTime * velocityMultiplier;
 		XMStoreFloat4(&m_CPUInstanceData[i].positionAndScale, position);
 
 		float X = m_CPUInstanceData[i].positionAndScale.x;
@@ -250,17 +174,17 @@ void GameDX12::Update(DX::StepTimer const& timer)
 		// If an instance pops out of bounds in any dimension, reverse velocity in that dimension...
 		if (X < -c_boxBounds || X > c_boxBounds)
 		{
-			m_velocities[i] *= XMVectorSet(-1.0f, 1.0f, 1.0f, 1.0f);
+			m_Velocities[i] *= XMVectorSet(-1.0f, 1.0f, 1.0f, 1.0f);
 			bounce = true;
 		}
 		if (Y < -c_boxBounds || Y > c_boxBounds)
 		{
-			m_velocities[i] *= XMVectorSet(1.0f, -1.0f, 1.0f, 1.0f);
+			m_Velocities[i] *= XMVectorSet(1.0f, -1.0f, 1.0f, 1.0f);
 			bounce = true;
 		}
 		if (Z < -c_boxBounds || Z > c_boxBounds)
 		{
-			m_velocities[i] *= XMVectorSet(1.0f, 1.0f, -1.0f, 1.0f);
+			m_Velocities[i] *= XMVectorSet(1.0f, 1.0f, -1.0f, 1.0f);
 			bounce = true;
 		}
 
@@ -268,18 +192,18 @@ void GameDX12::Update(DX::StepTimer const& timer)
 		if (bounce)
 		{
 			position = XMLoadFloat4(&m_CPUInstanceData[i].positionAndScale);
-			position += m_velocities[i] * elapsedTime * c_velocityMultiplier;
+			position += m_Velocities[i] * elapsedTime * c_velocityMultiplier;
 			XMStoreFloat4(&m_CPUInstanceData[i].positionAndScale, position);
 		}
 
 		// Set up point light info.
 		if (i <= c_pointLightCount)
 		{
-			m_lights.pointPositions[i - 1] = m_CPUInstanceData[i].positionAndScale;
+			m_Lights.pointPositions[i - 1] = m_CPUInstanceData[i].positionAndScale;
 		}
 
 		XMVECTOR q = XMLoadFloat4(&m_CPUInstanceData[i].quaternion);
-		q = XMQuaternionNormalizeEst(XMQuaternionMultiply(m_rotationQuaternions[i], q));
+		q = XMQuaternionNormalizeEst(XMQuaternionMultiply(m_RotationQuaternions[i], q));
 		XMStoreFloat4(&m_CPUInstanceData[i].quaternion, q);
 	}
 
@@ -290,37 +214,37 @@ void GameDX12::Update(DX::StepTimer const& timer)
 void GameDX12::Render()
 {
 	// Don't try to render anything before the first Update.
-	if (m_timer.GetFrameCount() == 0)
+	if (m_Timer.GetFrameCount() == 0)
 	{
 		return;
 	}
 
 	// Check to see if the GPU is keeping up
-	int frameIdx = m_deviceResources->GetCurrentFrameIndex();
-	int numBackBuffers = m_deviceResources->GetBackBufferCount();
-	uint64_t completedValue = m_fence->GetCompletedValue();
+	int frameIdx = m_DeviceResources->GetCurrentFrameIndex();
+	int numBackBuffers = m_DeviceResources->GetBackBufferCount();
+	uint64_t completedValue = m_Fence->GetCompletedValue();
 	if ((frameIdx > completedValue) // if frame index is reset to zero it may temporarily be smaller than the last GPU signal
 		&& (frameIdx - completedValue > numBackBuffers))
 	{
 		// GPU not caught up, wait for at least one available frame
-		DX::ThrowIfFailed(m_fence->SetEventOnCompletion(frameIdx - numBackBuffers, m_fenceEvent.Get()));
-		WaitForSingleObjectEx(m_fenceEvent.Get(), INFINITE, FALSE);
+		DX::ThrowIfFailed(m_Fence->SetEventOnCompletion(frameIdx - numBackBuffers, m_FenceEvent.Get()));
+		WaitForSingleObjectEx(m_FenceEvent.Get(), INFINITE, FALSE);
 	}
 
 	// Prepare the command list to render a new frame.
-	m_deviceResources->Prepare();
+	m_DeviceResources->Prepare();
 	Clear();
 
-	auto commandList = m_deviceResources->GetCommandList();
+	auto commandList = m_DeviceResources->GetCommandList();
 	PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Render");
 
-	commandList->SetGraphicsRootSignature(m_rootSignature.Get());
-	commandList->SetPipelineState(m_pipelineState.Get());
+	commandList->SetGraphicsRootSignature(m_RootSignature.Get());
+	commandList->SetPipelineState(m_PipelineState.Get());
 
 	// We use the DirectX Tool Kit helper for managing constants memory
 	// (see SimpleLightingUWP12 for how to provide constants without this helper)
-	auto vertexConstants = m_graphicsMemory->AllocateConstant<XMFLOAT4X4>(m_clip);
-	auto pixelConstants = m_graphicsMemory->AllocateConstant<Lights>(m_lights);
+	auto vertexConstants = m_GraphicsMemory->AllocateConstant<XMFLOAT4X4>(m_Clip);
+	auto pixelConstants = m_GraphicsMemory->AllocateConstant<Lights>(m_Lights);
 
 	commandList->SetGraphicsRootConstantBufferView(0, vertexConstants.GpuAddress());
 	commandList->SetGraphicsRootConstantBufferView(1, pixelConstants.GpuAddress());
@@ -332,63 +256,61 @@ void GameDX12::Render()
 	int instanceIdx = (frameIdx % numBackBuffers);
 	int frameOffset = (c_maxInstances * sizeof(Instance)) * instanceIdx;
 
-	memcpy(m_mappedInstanceData + frameOffset, m_CPUInstanceData.get(), sizeof(Instance) * m_usedInstanceCount);
+	memcpy(m_MappedInstanceData + frameOffset, m_CPUInstanceData.get(), sizeof(Instance) * m_UsedInstanceCount);
 
-	m_vertexBufferView[1].BufferLocation = m_instanceDataGpuAddr + frameOffset;
-	m_vertexBufferView[1].StrideInBytes = sizeof(Instance);
-	m_vertexBufferView[1].SizeInBytes = sizeof(Instance) * m_usedInstanceCount;
+	m_VertexBufferView[1].BufferLocation = m_InstanceDataGpuAddr + frameOffset;
+	m_VertexBufferView[1].StrideInBytes = sizeof(Instance);
+	m_VertexBufferView[1].SizeInBytes = sizeof(Instance) * m_UsedInstanceCount;
 
 	// Set up the vertex buffers. We have 3 streams:
 	// Stream 1 contains per-primitive vertices defining the cubes.
 	// Stream 2 contains the per-instance data for scale, position and orientation
 	// Stream 3 contains the per-instance data for color.
-	commandList->IASetVertexBuffers(0, _countof(m_vertexBufferView), m_vertexBufferView);
+	commandList->IASetVertexBuffers(0, _countof(m_VertexBufferView), m_VertexBufferView);
 
 	// The per-instance data is referenced by index...
-	commandList->IASetIndexBuffer(&m_indexBufferView);
+	commandList->IASetIndexBuffer(&m_IndexBufferView);
 
 	// Draw the entire scene...
-	commandList->DrawIndexedInstanced(c_cubeIndexCount, m_usedInstanceCount, 0, 0, 0);
+	commandList->DrawIndexedInstanced(c_cubeIndexCount, m_UsedInstanceCount, 0, 0, 0);
 
 	// Draw UI.
-	ID3D12DescriptorHeap* heaps[] = { m_resourceDescriptors->Heap() };
+	ID3D12DescriptorHeap* heaps[] = { m_ResourceDescriptors->Heap() };
 	commandList->SetDescriptorHeaps(_countof(heaps), heaps);
 
-	auto size = m_deviceResources->GetOutputSize();
+	auto size = m_DeviceResources->GetOutputSize();
 	auto safe = SimpleMath::Viewport::ComputeTitleSafeArea(size.right, size.bottom);
 
-	std::cout << safe.left << "  " << safe.top << std::endl;
-
-	m_batch->Begin(commandList);
+	m_SpriteBatch->Begin(commandList);
 
 	wchar_t str[32] = {};
-	swprintf_s(str, L"Instancing count: %u", m_usedInstanceCount);
-	m_smallFont->DrawString(m_batch.get(), str, XMFLOAT2(float(safe.left), float(safe.top)), Colors::LightGray);
+	swprintf_s(str, L"Instancing count: %u", m_UsedInstanceCount);
+	m_SmallFont->DrawString(m_SpriteBatch.get(), str, XMFLOAT2(float(safe.left), float(safe.top)), Colors::LightGray);
 
-	m_batch->End();
+	m_SpriteBatch->End();
 
 	PIXEndEvent(commandList);
 
 	// Show the new frame.
-	PIXBeginEvent(m_deviceResources->GetCommandQueue(), PIX_COLOR_DEFAULT, L"Present");
-	m_deviceResources->Present();
-	m_graphicsMemory->Commit(m_deviceResources->GetCommandQueue());
+	PIXBeginEvent(m_DeviceResources->GetCommandQueue(), PIX_COLOR_DEFAULT, L"Present");
+	m_DeviceResources->Present();
+	m_GraphicsMemory->Commit(m_DeviceResources->GetCommandQueue());
 
 	// GPU will signal an increasing value each frame
-	m_deviceResources->GetCommandQueue()->Signal(m_fence.Get(), frameIdx);
+	m_DeviceResources->GetCommandQueue()->Signal(m_Fence.Get(), frameIdx);
 
-	PIXEndEvent(m_deviceResources->GetCommandQueue());
+	PIXEndEvent(m_DeviceResources->GetCommandQueue());
 }
 
 // Helper method to prepare the command list for rendering and clear the back buffers.
 void GameDX12::Clear()
 {
-	auto commandList = m_deviceResources->GetCommandList();
+	auto commandList = m_DeviceResources->GetCommandList();
 	PIXBeginEvent(commandList, PIX_COLOR_DEFAULT, L"Clear");
 
 	// Clear the views.
-	auto rtvDescriptor = m_deviceResources->GetRenderTargetView();
-	auto dsvDescriptor = m_deviceResources->GetDepthStencilView();
+	auto rtvDescriptor = m_DeviceResources->GetRenderTargetView();
+	auto dsvDescriptor = m_DeviceResources->GetDepthStencilView();
 
 	commandList->OMSetRenderTargets(1, &rtvDescriptor, FALSE, &dsvDescriptor);
 
@@ -397,8 +319,8 @@ void GameDX12::Clear()
 	commandList->ClearDepthStencilView(dsvDescriptor, D3D12_CLEAR_FLAG_DEPTH, 1.0f, 0, 0, nullptr);
 
 	// Set the viewport and scissor rect.
-	auto viewport = m_deviceResources->GetScreenViewport();
-	auto scissorRect = m_deviceResources->GetScissorRect();
+	auto viewport = m_DeviceResources->GetScreenViewport();
+	auto scissorRect = m_DeviceResources->GetScissorRect();
 	commandList->RSSetViewports(1, &viewport);
 	commandList->RSSetScissorRects(1, &scissorRect);
 
@@ -407,33 +329,28 @@ void GameDX12::Clear()
 
 void GameDX12::CreateDeviceDependentResources()
 {
-	auto device = m_deviceResources->GetD3DDevice();
+	auto device = m_DeviceResources->GetD3DDevice();
 
-	m_graphicsMemory = std::make_unique<GraphicsMemory>(device);
+	m_GraphicsMemory = std::make_unique<GraphicsMemory>(device);
 
-	m_resourceDescriptors = std::make_unique<DescriptorHeap>(device, Descriptors::Count);
+	m_ResourceDescriptors = std::make_unique<DescriptorHeap>(device, Descriptors::Count);
 
 	ResourceUploadBatch resourceUpload(device);
 
 	resourceUpload.Begin();
 
 	{
-		RenderTargetState rtState(m_deviceResources->GetBackBufferFormat(), m_deviceResources->GetDepthBufferFormat());
+		RenderTargetState rtState(m_DeviceResources->GetBackBufferFormat(), m_DeviceResources->GetDepthBufferFormat());
 
 		SpriteBatchPipelineStateDescription pd(rtState);
 
-		m_batch = std::make_unique<SpriteBatch>(device, resourceUpload, pd);
+		m_SpriteBatch = std::make_unique<SpriteBatch>(device, resourceUpload, pd);
 	}
 
-	m_smallFont = std::make_unique<SpriteFont>(device, resourceUpload,
+	m_SmallFont = std::make_unique<SpriteFont>(device, resourceUpload,
 		L"files/SegoeUI_18.spritefont",
-		m_resourceDescriptors->GetCpuHandle(Descriptors::TextFont),
-		m_resourceDescriptors->GetGpuHandle(Descriptors::TextFont));
-	//
-	//m_ctrlFont = std::make_unique<SpriteFont>(device, resourceUpload,
-	//	L"XboxOneControllerLegendSmall.spritefont",
-	//	m_resourceDescriptors->GetCpuHandle(Descriptors::ControllerFont),
-	//	m_resourceDescriptors->GetGpuHandle(Descriptors::ControllerFont));
+		m_ResourceDescriptors->GetCpuHandle(Descriptors::TextFont),
+		m_ResourceDescriptors->GetGpuHandle(Descriptors::TextFont));
 
 	// Create a root signature
 	{
@@ -457,7 +374,7 @@ void GameDX12::CreateDeviceDependentResources()
 			D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
 		DX::ThrowIfFailed(
 			device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(),
-				IID_PPV_ARGS(m_rootSignature.ReleaseAndGetAddressOf())));
+				IID_PPV_ARGS(m_RootSignature.ReleaseAndGetAddressOf())));
 	}
 
 	// Create the pipeline state, which includes loading shaders.
@@ -478,62 +395,29 @@ void GameDX12::CreateDeviceDependentResources()
 	// Describe and create the graphics pipeline state object (PSO).
 	D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 	psoDesc.InputLayout = { s_inputElementDesc, _countof(s_inputElementDesc) };
-	psoDesc.pRootSignature = m_rootSignature.Get();
+	psoDesc.pRootSignature = m_RootSignature.Get();
 	psoDesc.VS = { vertexShaderBlob.data(), vertexShaderBlob.size() };
 	psoDesc.PS = { pixelShaderBlob.data(), pixelShaderBlob.size() };
 	psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 	psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 	psoDesc.DepthStencilState.DepthEnable = FALSE;
 	psoDesc.DepthStencilState.StencilEnable = FALSE;
-	psoDesc.DSVFormat = m_deviceResources->GetDepthBufferFormat();
+	psoDesc.DSVFormat = m_DeviceResources->GetDepthBufferFormat();
 	psoDesc.SampleMask = UINT_MAX;
 	psoDesc.PrimitiveTopologyType = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
 	psoDesc.NumRenderTargets = 1;
-	psoDesc.RTVFormats[0] = m_deviceResources->GetBackBufferFormat();
+	psoDesc.RTVFormats[0] = m_DeviceResources->GetBackBufferFormat();
 	psoDesc.SampleDesc.Count = 1;
 	DX::ThrowIfFailed(
 		device->CreateGraphicsPipelineState(&psoDesc,
-			IID_PPV_ARGS(m_pipelineState.ReleaseAndGetAddressOf())));
+			IID_PPV_ARGS(m_PipelineState.ReleaseAndGetAddressOf())));
 
-	m_deviceResources->GetCommandList()->SetPipelineState(m_pipelineState.Get());
+	m_DeviceResources->GetCommandList()->SetPipelineState(m_PipelineState.Get());
 
-	// Create and initialize the vertex buffer defining a cube.
+	// Create and initialize the vertex buffer
 	{
 		CD3DX12_HEAP_PROPERTIES heapUpload(D3D12_HEAP_TYPE_UPLOAD);
 		CD3DX12_HEAP_PROPERTIES heapDefault(D3D12_HEAP_TYPE_DEFAULT);
-
-		static const Vertex s_vertexData[] =
-		{
-			{ XMFLOAT3(-1,  -1,  -1), XMFLOAT3(0,    0,  -1) },
-			{ XMFLOAT3(1,  -1,  -1), XMFLOAT3(0,    0,  -1) },
-			{ XMFLOAT3(1,   1,  -1), XMFLOAT3(0,    0,  -1) },
-			{ XMFLOAT3(-1,   1,  -1), XMFLOAT3(0,    0,  -1) },    // Z negative face
-
-			{ XMFLOAT3(1,  -1,   1), XMFLOAT3(0,    0,   1) },
-			{ XMFLOAT3(-1,  -1,   1), XMFLOAT3(0,    0,   1) },
-			{ XMFLOAT3(-1,   1,   1), XMFLOAT3(0,    0,   1) },
-			{ XMFLOAT3(1,   1,   1), XMFLOAT3(0,    0,   1) },    // Z Positive face
-
-			{ XMFLOAT3(-1,  -1,  -1), XMFLOAT3(-1,   0,   0) },
-			{ XMFLOAT3(-1,   1,  -1), XMFLOAT3(-1,   0,   0) },
-			{ XMFLOAT3(-1,   1,   1), XMFLOAT3(-1,   0,   0) },
-			{ XMFLOAT3(-1,  -1,   1), XMFLOAT3(-1,   0,   0) },    // X negative face
-
-			{ XMFLOAT3(1,   1,  -1), XMFLOAT3(1,   0,   0) },
-			{ XMFLOAT3(1,  -1,  -1), XMFLOAT3(1,   0,   0) },
-			{ XMFLOAT3(1,  -1,   1), XMFLOAT3(1,   0,   0) },
-			{ XMFLOAT3(1,   1,   1), XMFLOAT3(1,   0,   0) },    // X Positive face
-
-			{ XMFLOAT3(-1,  -1,   1), XMFLOAT3(0,   -1,   0) },
-			{ XMFLOAT3(1,  -1,   1), XMFLOAT3(0,   -1,   0) },
-			{ XMFLOAT3(1,  -1,  -1), XMFLOAT3(0,   -1,   0) },
-			{ XMFLOAT3(-1,  -1,  -1), XMFLOAT3(0,   -1,   0) },    // Y negative face
-
-			{ XMFLOAT3(1,   1,   1), XMFLOAT3(0,    1,   0) },
-			{ XMFLOAT3(-1,   1,   1), XMFLOAT3(0,    1,   0) },
-			{ XMFLOAT3(-1,   1,  -1), XMFLOAT3(0,    1,   0) },
-			{ XMFLOAT3(1,   1,  -1), XMFLOAT3(0,    1,   0) },    // Y Positive face
-		};
 
 		std::vector<Vertex> verts{ ModelManager::GetInstance()->GetVerts() };
 
@@ -550,9 +434,9 @@ void GameDX12::CreateDeviceDependentResources()
 				&resDesc,
 				D3D12_RESOURCE_STATE_COPY_DEST,
 				nullptr,
-				IID_PPV_ARGS(m_vertexBuffer.ReleaseAndGetAddressOf())));
+				IID_PPV_ARGS(m_VertexBuffer.ReleaseAndGetAddressOf())));
 
-		m_vertexBuffer->SetName(L"Vertex Buffer");
+		m_VertexBuffer->SetName(L"Vertex Buffer");
 
 		DX::ThrowIfFailed(
 			device->CreateCommittedResource(
@@ -561,9 +445,9 @@ void GameDX12::CreateDeviceDependentResources()
 				&resDesc,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				nullptr,
-				IID_PPV_ARGS(m_vertexBufferUpload.ReleaseAndGetAddressOf())));
+				IID_PPV_ARGS(m_VertexBufferUpload.ReleaseAndGetAddressOf())));
 
-		m_vertexBufferUpload->SetName(L"Vertex Upload Buffer");
+		m_VertexBufferUpload->SetName(L"Vertex Upload Buffer");
 
 		// Copy data to the upload heap and then schedule a copy 
 		// from the upload heap to the vertex buffer.
@@ -572,46 +456,28 @@ void GameDX12::CreateDeviceDependentResources()
 		vertexData.RowPitch = sizeof(Vertex) * static_cast<uint32_t>(verts.size());
 		vertexData.SlicePitch = vertexData.RowPitch;
 
-		PIXBeginEvent(m_deviceResources->GetCommandList(), 0, L"Copy vertex buffer data to default resource...");
+		PIXBeginEvent(m_DeviceResources->GetCommandList(), 0, L"Copy vertex buffer data to default resource...");
 		
-		auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_vertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+		auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_VertexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
 													 D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER) };
 
-		UpdateSubresources<1>(m_deviceResources->GetCommandList(), m_vertexBuffer.Get(), m_vertexBufferUpload.Get(), 0, 0, 1, &vertexData);
-		m_deviceResources->GetCommandList()->ResourceBarrier(1, &transition);
+		UpdateSubresources<1>(m_DeviceResources->GetCommandList(), m_VertexBuffer.Get(), m_VertexBufferUpload.Get(), 0, 0, 1, &vertexData);
+		m_DeviceResources->GetCommandList()->ResourceBarrier(1, &transition);
 
-		PIXEndEvent(m_deviceResources->GetCommandList());
-
-		// Copy the triangle data to the vertex buffer.
-		//UINT8* pVertexDataBegin;
-		//CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
-		//DX::ThrowIfFailed(
-		//	m_vertexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-		//memcpy(pVertexDataBegin, verts.data(), sizeof(Vertex) * static_cast<uint32_t>(verts.size()));
-		//m_vertexBuffer->Unmap(0, nullptr);
+		PIXEndEvent(m_DeviceResources->GetCommandList());
 
 		// Initialize the vertex buffer view.
-		m_vertexBufferView[0].BufferLocation = m_vertexBuffer->GetGPUVirtualAddress();
-		m_vertexBufferView[0].StrideInBytes = sizeof(Vertex);
-		m_vertexBufferView[0].SizeInBytes = sizeof(Vertex) * static_cast<uint32_t>(verts.size());
+		m_VertexBufferView[0].BufferLocation = m_VertexBuffer->GetGPUVirtualAddress();
+		m_VertexBufferView[0].StrideInBytes = sizeof(Vertex);
+		m_VertexBufferView[0].SizeInBytes = sizeof(Vertex) * static_cast<uint32_t>(verts.size());
 	}
 
 	// Create vertex buffer memory for per-instance data.
 	{
 		D3D12_HEAP_PROPERTIES defaultHeap{ D3D12_HEAP_TYPE_DEFAULT };
 		const D3D12_HEAP_PROPERTIES uploadHeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-		size_t cbSize = c_maxInstances * m_deviceResources->GetBackBufferCount() * sizeof(Instance);
+		size_t cbSize = c_maxInstances * m_DeviceResources->GetBackBufferCount() * sizeof(Instance);
 		const D3D12_RESOURCE_DESC instanceBufferDesc = CD3DX12_RESOURCE_DESC::Buffer(cbSize);
-
-		/*DX::ThrowIfFailed(device->CreateCommittedResource(
-			&defaultHeap,
-			D3D12_HEAP_FLAG_NONE,
-			&instanceBufferDesc,
-			D3D12_RESOURCE_STATE_COPY_DEST,
-			nullptr,
-			IID_PPV_ARGS(m_instanceData.ReleaseAndGetAddressOf())));
-
-		NAME_D3D12_OBJECT(m_instanceData);*/
 		{
 			DX::ThrowIfFailed(device->CreateCommittedResource(
 				&uploadHeapProperties,
@@ -619,37 +485,15 @@ void GameDX12::CreateDeviceDependentResources()
 				&instanceBufferDesc,
 				D3D12_RESOURCE_STATE_GENERIC_READ,
 				nullptr,
-				IID_PPV_ARGS(m_instanceData.ReleaseAndGetAddressOf())));
+				IID_PPV_ARGS(m_InstanceData.ReleaseAndGetAddressOf())));
 
-			m_instanceData->SetName(L"Instance Buffer");
-
-			/*Instance inst[] = {XMFLOAT4{1.f, 1.f, 1.f, 1}, XMFLOAT4{1, 1, 1, 1}};
-
-			D3D12_SUBRESOURCE_DATA instanceData{};
-			instanceData.pData = inst;
-			instanceData.RowPitch = sizeof(inst);
-			instanceData.SlicePitch = instanceData.RowPitch;
-
-			PIXBeginEvent(m_deviceResources->GetCommandList(), 0, L"Copy vertex buffer data to default resource...");
-
-			auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_instanceData.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
-														 D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER) };
-
-
-			UpdateSubresources<1>(m_deviceResources->GetCommandList(), m_instanceData.Get(), m_instanceDataUpload.Get(), 0, 0, 1, nullptr);
-			m_deviceResources->GetCommandList()->ResourceBarrier(1, &transition);
-
-			PIXEndEvent(m_deviceResources->GetCommandList());*/
+			m_InstanceData->SetName(L"Instance Buffer");
 		}
-
-		/*m_vertexBufferView[1].BufferLocation = m_instanceData->GetGPUVirtualAddress();
-		m_vertexBufferView[1].StrideInBytes = sizeof(Instance);
-		m_vertexBufferView[1].SizeInBytes = cbSize;*/
 		
 
-		DX::ThrowIfFailed(m_instanceData->Map(0, nullptr, reinterpret_cast<void**>(&m_mappedInstanceData)));
+		DX::ThrowIfFailed(m_InstanceData->Map(0, nullptr, reinterpret_cast<void**>(&m_MappedInstanceData)));
 
-		m_instanceDataGpuAddr = m_instanceData->GetGPUVirtualAddress();
+		m_InstanceDataGpuAddr = m_InstanceData->GetGPUVirtualAddress();
 	}
 
 	// Create a static vertex buffer with color data.
@@ -661,8 +505,8 @@ void GameDX12::CreateDeviceDependentResources()
 		{
 			if (i <= c_pointLightCount)
 			{
-				m_lights.pointColors[i - 1] = XMFLOAT4(FloatRand(0.25f, 1.0f), FloatRand(0.25f, 1.0f), FloatRand(0.25f, 1.0f), 1.0f);
-				colors[i] = PackedVector::XMCOLOR(m_lights.pointColors[i - 1].x, m_lights.pointColors[i - 1].y, m_lights.pointColors[i - 1].z, 1.f);
+				m_Lights.pointColors[i - 1] = XMFLOAT4(FloatRand(0.25f, 1.0f), FloatRand(0.25f, 1.0f), FloatRand(0.25f, 1.0f), 1.0f);
+				colors[i] = PackedVector::XMCOLOR(m_Lights.pointColors[i - 1].x, m_Lights.pointColors[i - 1].y, m_Lights.pointColors[i - 1].z, 1.f);
 			}
 			else
 			{
@@ -681,8 +525,8 @@ void GameDX12::CreateDeviceDependentResources()
 				&resDesc,
 				D3D12_RESOURCE_STATE_COPY_DEST,
 				nullptr,
-				IID_PPV_ARGS(m_boxColors.ReleaseAndGetAddressOf())));
-		m_boxColors->SetName(L"Color Buffer");
+				IID_PPV_ARGS(m_BoxColors.ReleaseAndGetAddressOf())));
+		m_BoxColors->SetName(L"Color Buffer");
 		{
 			DX::ThrowIfFailed(
 				device->CreateCommittedResource(
@@ -691,58 +535,35 @@ void GameDX12::CreateDeviceDependentResources()
 					&resDesc,
 					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
-					IID_PPV_ARGS(m_boxColorsUpload.ReleaseAndGetAddressOf())));
-			m_boxColorsUpload->SetName(L"Color Upload Buffer");
+					IID_PPV_ARGS(m_BoxColorsUpload.ReleaseAndGetAddressOf())));
+			m_BoxColorsUpload->SetName(L"Color Upload Buffer");
 
 			D3D12_SUBRESOURCE_DATA colorData{};
 			colorData.pData = reinterpret_cast<BYTE*>(colors);
 			colorData.RowPitch = sizeof(uint32_t) * c_maxInstances;
 			colorData.SlicePitch = colorData.RowPitch;
 
-			PIXBeginEvent(m_deviceResources->GetCommandList(), 0, L"Copy vertex buffer data to default resource...");
+			PIXBeginEvent(m_DeviceResources->GetCommandList(), 0, L"Copy vertex buffer data to default resource...");
 
-			auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_boxColors.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
+			auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_BoxColors.Get(), D3D12_RESOURCE_STATE_COPY_DEST,
 														 D3D12_RESOURCE_STATE_VERTEX_AND_CONSTANT_BUFFER) };
 
 
-			UpdateSubresources<1>(m_deviceResources->GetCommandList(), m_boxColors.Get(), m_boxColorsUpload.Get(), 0, 0, 1, &colorData);
-			m_deviceResources->GetCommandList()->ResourceBarrier(1, &transition);
+			UpdateSubresources<1>(m_DeviceResources->GetCommandList(), m_BoxColors.Get(), m_BoxColorsUpload.Get(), 0, 0, 1, &colorData);
+			m_DeviceResources->GetCommandList()->ResourceBarrier(1, &transition);
 
-			PIXEndEvent(m_deviceResources->GetCommandList());
+			PIXEndEvent(m_DeviceResources->GetCommandList());
 
 		}
-		// Copy the color data to the vertex buffer.
-		//UINT8* pVertexDataBegin;
-		//CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
-		//DX::ThrowIfFailed(
-		//	m_boxColors->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-		//memcpy(pVertexDataBegin, colors, sizeof(uint32_t) * c_maxInstances);
-		//m_boxColors->Unmap(0, nullptr);
 
 		// Initialize the vertex buffer view.
-		m_vertexBufferView[2].BufferLocation = m_boxColors->GetGPUVirtualAddress();
-		m_vertexBufferView[2].StrideInBytes = sizeof(uint32_t);
-		m_vertexBufferView[2].SizeInBytes = sizeof(uint32_t) * c_maxInstances;
+		m_VertexBufferView[2].BufferLocation = m_BoxColors->GetGPUVirtualAddress();
+		m_VertexBufferView[2].StrideInBytes = sizeof(uint32_t);
+		m_VertexBufferView[2].SizeInBytes = sizeof(uint32_t) * c_maxInstances;
 	}
 
-	// Create and initialize the index buffer for the cube geometry.
+	// Create and initialize the index buffer
 	{
-		static const uint16_t s_indexData[] =
-		{
-			0,  2,  1,
-			0,  3,  2,
-			4,  6,  5,
-			4,  7,  6,
-			8,  10, 9,
-			8,  11, 10,
-			12, 14, 13,
-			12, 15, 14,
-			16, 18, 17,
-			16, 19, 18,
-			20, 22, 21,
-			20, 23, 22,
-		};
-
 		std::vector<uint32_t> indcs{ ModelManager::GetInstance()->GetIndices() };
 		c_cubeIndexCount = static_cast<uint32_t>(indcs.size());
 
@@ -758,9 +579,9 @@ void GameDX12::CreateDeviceDependentResources()
 				&resDesc,
 				D3D12_RESOURCE_STATE_COPY_DEST,
 				nullptr,
-				IID_PPV_ARGS(m_indexBuffer.ReleaseAndGetAddressOf())));
+				IID_PPV_ARGS(m_IndexBuffer.ReleaseAndGetAddressOf())));
 
-		m_indexBuffer->SetName(L"Index Buffer");
+		m_IndexBuffer->SetName(L"Index Buffer");
 
 		{
 			DX::ThrowIfFailed(
@@ -770,81 +591,65 @@ void GameDX12::CreateDeviceDependentResources()
 					&resDesc,
 					D3D12_RESOURCE_STATE_GENERIC_READ,
 					nullptr,
-					IID_PPV_ARGS(m_indexBufferUpload.ReleaseAndGetAddressOf())));
+					IID_PPV_ARGS(m_IndexBufferUpload.ReleaseAndGetAddressOf())));
 
 			D3D12_SUBRESOURCE_DATA indexData{};
 			indexData.pData = reinterpret_cast<BYTE*>(indcs.data());
-			/*indexData.RowPitch = sizeof(uint32_t) * static_cast<uint32_t>(indcs.size());
-			indexData.SlicePitch = indexData.RowPitch;*/
 
-			auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_indexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER) };
+			auto transition{ CD3DX12_RESOURCE_BARRIER::Transition(m_IndexBuffer.Get(), D3D12_RESOURCE_STATE_COPY_DEST, D3D12_RESOURCE_STATE_INDEX_BUFFER) };
 
-			UpdateSubresources<1>(m_deviceResources->GetCommandList(), m_indexBuffer.Get(), m_indexBufferUpload.Get(), 0, 0, 1, &indexData);
-			m_deviceResources->GetCommandList()->ResourceBarrier(1, &transition);
+			UpdateSubresources<1>(m_DeviceResources->GetCommandList(), m_IndexBuffer.Get(), m_IndexBufferUpload.Get(), 0, 0, 1, &indexData);
+			m_DeviceResources->GetCommandList()->ResourceBarrier(1, &transition);
 
 		}
 
-		// Copy the data to the index buffer.
-		//uint8_t* pVertexDataBegin;
-		//CD3DX12_RANGE readRange(0, 0);		// We do not intend to read from this resource on the CPU.
-		//DX::ThrowIfFailed(
-		//	m_indexBuffer->Map(0, &readRange, reinterpret_cast<void**>(&pVertexDataBegin)));
-		//memcpy(pVertexDataBegin, indcs.data(), sizeof(uint32_t)* static_cast<uint32_t>(indcs.size()));
-		//m_indexBuffer->Unmap(0, nullptr);
-
 		// Initialize the index buffer view.
-		m_indexBufferView.BufferLocation = m_indexBuffer->GetGPUVirtualAddress();
-		m_indexBufferView.Format = DXGI_FORMAT_R32_UINT;
-		m_indexBufferView.SizeInBytes = sizeof(uint32_t) * static_cast<uint32_t>(indcs.size());
+		m_IndexBufferView.BufferLocation = m_IndexBuffer->GetGPUVirtualAddress();
+		m_IndexBufferView.Format = DXGI_FORMAT_R32_UINT;
+		m_IndexBufferView.SizeInBytes = sizeof(uint32_t) * static_cast<uint32_t>(indcs.size());
 	}
 
-	ThrowIfFailed(m_deviceResources->GetCommandList()->Close());
-	ID3D12CommandList* ppCommandLists[] = { m_deviceResources->GetCommandList() };
-	m_deviceResources->GetCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
+	ThrowIfFailed(m_DeviceResources->GetCommandList()->Close());
+	ID3D12CommandList* ppCommandLists[] = { m_DeviceResources->GetCommandList() };
+	m_DeviceResources->GetCommandQueue()->ExecuteCommandLists(_countof(ppCommandLists), ppCommandLists);
 
 	m_CPUInstanceData.reset(new Instance[c_maxInstances]);
-	m_rotationQuaternions.reset(reinterpret_cast<XMVECTOR*>(_aligned_malloc(sizeof(XMVECTOR) * c_maxInstances, 16)));
-	m_velocities.reset(reinterpret_cast<XMVECTOR*>(_aligned_malloc(sizeof(XMVECTOR) * c_maxInstances, 16)));
-
-	// Set up the position and scale for the container box. Scale is negative to turn the box inside-out 
-	// (this effectively reverses the normals and backface culling).
-	// Scale the outside box to slightly larger than our scene boundary, so bouncing boxes never actually clip it.
-	//m_CPUInstanceData[0].positionAndScale = XMFLOAT4(0.0f, 0.0f, 0.0f, -(c_boxBounds + 5));
-	//m_CPUInstanceData[0].quaternion = XMFLOAT4(0.0f, 0.0f, 0.0f, 1.0f);
+	m_RotationQuaternions.reset(reinterpret_cast<XMVECTOR*>(_aligned_malloc(sizeof(XMVECTOR) * c_maxInstances, 16)));
+	m_Velocities.reset(reinterpret_cast<XMVECTOR*>(_aligned_malloc(sizeof(XMVECTOR) * c_maxInstances, 16)));
 
 	// Initialize the directional light.
-	XMStoreFloat4(&m_lights.directional, XMVector3Normalize(XMVectorSet(1.0f, 4.0f, -2.0f, 0)));
+	XMStoreFloat4(&m_Lights.directional, XMVector3Normalize(XMVectorSet(1.0f, 4.0f, -2.0f, 0)));
 
 	// Initialize the positions/state of all the cubes in the scene.
 	ResetSimulation();
 
 	// Wait until assets have been uploaded to the GPU.
-	//auto uploadResourcesFinished = resourceUpload.End(m_deviceResources->GetCommandQueue());
-	//uploadResourcesFinished.wait();
+	auto uploadResourcesFinished = resourceUpload.End(m_DeviceResources->GetCommandQueue());
+	uploadResourcesFinished.wait();
 
 	// Create a fence for synchronizing between the CPU and the GPU
-	DX::ThrowIfFailed(device->CreateFence(m_deviceResources->GetCurrentFrameIndex(), D3D12_FENCE_FLAG_NONE,
-		IID_PPV_ARGS(m_fence.ReleaseAndGetAddressOf())));
+	DX::ThrowIfFailed(device->CreateFence(m_DeviceResources->GetCurrentFrameIndex(), D3D12_FENCE_FLAG_NONE,
+		IID_PPV_ARGS(m_Fence.ReleaseAndGetAddressOf())));
 
 }
 
 void GameDX12::CreateWindowSizeDependentResources()
 {
 	// Initialize the projection matrix.
-	auto size = m_deviceResources->GetOutputSize();
+	auto size = m_DeviceResources->GetOutputSize();
 
 	XMMATRIX proj = XMMatrixPerspectiveFovLH(XM_PIDIV4, float(size.right) / float(size.bottom), 0.1f, 500.0f);
 
-	//XMFLOAT4X4 orient = m_deviceResources->GetOrientationTransform3D();
-	XMStoreFloat4x4(&m_proj, proj /** XMLoadFloat4x4(&orient)*/);
+	//XMFLOAT4X4 orient = m_DeviceResources->GetOrientationTransform3D();
+	XMStoreFloat4x4(&m_Proj, proj /** XMLoadFloat4x4(&orient)*/);
 
 	// Set the viewport for our SpriteBatch.
-	m_batch->SetViewport(m_deviceResources->GetScreenViewport());
+	m_SpriteBatch->SetViewport(m_DeviceResources->GetScreenViewport());
 
 	// The frame index will be reset to zero when the window size changes
 	// So we need to tell the GPU to signal our fence starting with zero
-	uint64_t currentIdx = m_deviceResources->GetCurrentFrameIndex();
-	m_deviceResources->GetCommandQueue()->Signal(m_fence.Get(), currentIdx);
+	uint64_t currentIdx = m_DeviceResources->GetCurrentFrameIndex();
+	m_DeviceResources->GetCommandQueue()->Signal(m_Fence.Get(), currentIdx);
 }
 
 void GameDX12::ResetSimulation()
@@ -860,14 +665,14 @@ void GameDX12::ResetSimulation()
 		if (i <= c_pointLightCount)
 		{
 			m_CPUInstanceData[i].positionAndScale.w = 1.53f;
-			m_lights.pointPositions[i - 1] = m_CPUInstanceData[i].positionAndScale;
+			m_Lights.pointPositions[i - 1] = m_CPUInstanceData[i].positionAndScale;
 		}
 
 		// Apply a random spin to each instance.
-		m_rotationQuaternions[i] = XMQuaternionRotationAxis(XMVector3Normalize(XMVectorSet(FloatRand(), FloatRand(), FloatRand(), 0)), FloatRand(0.001f, 0.1f));
+		m_RotationQuaternions[i] = XMQuaternionRotationAxis(XMVector3Normalize(XMVectorSet(FloatRand(), FloatRand(), FloatRand(), 0)), FloatRand(0.001f, 0.1f));
 
 		// ...and a random velocity.
-		m_velocities[i] = XMVectorSet(FloatRand(-0.01f, 0.01f), FloatRand(-0.01f, 0.01f), FloatRand(-0.01f, 0.01f), 0);
+		m_Velocities[i] = XMVectorSet(FloatRand(-0.01f, 0.01f), FloatRand(-0.01f, 0.01f), FloatRand(-0.01f, 0.01f), 0);
 	}
 }
 
@@ -878,7 +683,7 @@ float GameDX12::FloatRand(float lowerBound, float upperBound)
 
 	std::uniform_real_distribution<float> dist(lowerBound, upperBound);
 
-	return dist(m_randomEngine);
+	return dist(m_RandomEngine);
 }
 
 
@@ -899,28 +704,26 @@ void GameDX12::OnSuspending()
 
 void GameDX12::OnResuming()
 {
-	m_timer.ResetElapsedTime();
-	m_gamePadButtons.Reset();
-	m_keyboardButtons.Reset();
+	m_Timer.ResetElapsedTime();
 
 	// TODO: Game is being power-resumed (or returning from minimize).
 }
 
 void GameDX12::OnWindowMoved()
 {
-	auto const r = m_deviceResources->GetOutputSize();
-	m_deviceResources->WindowSizeChanged(r.right, r.bottom);
+	auto const r = m_DeviceResources->GetOutputSize();
+	m_DeviceResources->WindowSizeChanged(r.right, r.bottom);
 }
 
 void GameDX12::OnDisplayChange()
 {
-	//m_deviceResources->UpdateColorSpace();
+	//m_DeviceResources->UpdateColorSpace();
 }
 
 void GameDX12::OnWindowSizeChanged(int width, int height)
 {
 	BaseGame::OnWindowSizeChanged(width, height);
-	if (!m_deviceResources->WindowSizeChanged(width, height))
+	if (!m_DeviceResources->WindowSizeChanged(width, height))
 		return;
 
 	CreateWindowSizeDependentResources();
@@ -931,23 +734,23 @@ void GameDX12::OnWindowSizeChanged(int width, int height)
 void GameDX12::OnDeviceLost()
 {
 	// If using the DirectX Tool Kit for DX12, uncomment this line:
-	m_batch.reset();
-	//m_smallFont.reset();
+	m_SpriteBatch.reset();
+	//m_SmallFont.reset();
 	//m_ctrlFont.reset();
 
-	m_rootSignature.Reset();
-	m_pipelineState.Reset();
-	m_vertexBuffer.Reset();
-	m_indexBuffer.Reset();
-	m_boxColors.Reset();
+	m_RootSignature.Reset();
+	m_PipelineState.Reset();
+	m_VertexBuffer.Reset();
+	m_IndexBuffer.Reset();
+	m_BoxColors.Reset();
 
-	m_instanceData.Reset();
-	m_mappedInstanceData = nullptr;
-	m_instanceDataGpuAddr = 0;
-	m_fence.Reset();
+	m_InstanceData.Reset();
+	m_MappedInstanceData = nullptr;
+	m_InstanceDataGpuAddr = 0;
+	m_Fence.Reset();
 
-	m_resourceDescriptors.reset();
-	m_graphicsMemory.reset();
+	m_ResourceDescriptors.reset();
+	m_GraphicsMemory.reset();
 }
 
 void GameDX12::OnDeviceRestored()

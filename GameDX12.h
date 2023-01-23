@@ -37,30 +37,17 @@ public:
 	virtual void OnDisplayChange() override;
 	virtual void OnWindowSizeChanged(int width, int height) override;
 
-	uint32_t GetCurrentInstanceCount() const { return m_usedInstanceCount; };
+	uint32_t GetCurrentInstanceCount() const { return m_UsedInstanceCount; };
 
 private:
 	// Device resources.
-	std::unique_ptr<DX::DeviceResourcesDX12>        m_deviceResources;
-
-	// Rendering loop timer.
-	DX::StepTimer                               m_timer;
-
-	// Input devices.
-	std::unique_ptr<DirectX12::GamePad>           m_gamePad;
-	std::unique_ptr<DirectX12::Keyboard>          m_keyboard;
-	std::unique_ptr<DirectX12::Mouse>             m_mouse;
-
-	DirectX12::GamePad::ButtonStateTracker        m_gamePadButtons;
-	DirectX12::Keyboard::KeyboardStateTracker     m_keyboardButtons;
-	bool                                          m_gamepadPresent;
+	std::unique_ptr<DX::DeviceResourcesDX12>        m_DeviceResources;
 
 	// DirectXTK objects.
-	std::unique_ptr<DirectX12::GraphicsMemory>    m_graphicsMemory;
-	std::unique_ptr<DirectX12::DescriptorHeap>    m_resourceDescriptors;
-	std::unique_ptr<DirectX12::SpriteBatch>       m_batch;
-	std::unique_ptr<DirectX12::SpriteFont>        m_smallFont;
-	std::unique_ptr<DirectX12::SpriteFont>        m_ctrlFont;
+	std::unique_ptr<DirectX12::GraphicsMemory>    m_GraphicsMemory;
+	std::unique_ptr<DirectX12::DescriptorHeap>    m_ResourceDescriptors;
+	std::unique_ptr<DirectX12::SpriteBatch>       m_SpriteBatch;
+	std::unique_ptr<DirectX12::SpriteFont>        m_SmallFont;
 
 	enum Descriptors
 	{
@@ -73,60 +60,44 @@ private:
 	// Sample Objects.
 	//--------------------------------------------------------------------------------------
 
-	// Instance vertex definition
-	struct Instance
-	{
-		DirectX::XMFLOAT4 quaternion;
-		DirectX::XMFLOAT4 positionAndScale;
-	};
-
-	// Light data structure (maps to constant buffer in pixel shader)
-	struct Lights
-	{
-		DirectX::XMFLOAT4 directional;
-		DirectX::XMFLOAT4 pointPositions[c_pointLightCount];
-		DirectX::XMFLOAT4 pointColors[c_pointLightCount];
-	};
-
 	// Direct3D 12 pipeline objects.
-	Microsoft::WRL::ComPtr<ID3D12RootSignature>  m_rootSignature;
-	Microsoft::WRL::ComPtr<ID3D12PipelineState>  m_pipelineState;
+	Microsoft::WRL::ComPtr<ID3D12RootSignature>  m_RootSignature;
+	Microsoft::WRL::ComPtr<ID3D12PipelineState>  m_PipelineState;
 
 	// Direct3D 12 resources.
-	Microsoft::WRL::ComPtr<ID3D12Resource>       m_vertexBuffer;
-	Microsoft::WRL::ComPtr<ID3D12Resource>       m_vertexBufferUpload;
-	D3D12_VERTEX_BUFFER_VIEW                     m_vertexBufferView[3];
-	Microsoft::WRL::ComPtr<ID3D12Resource>       m_indexBuffer;
-	Microsoft::WRL::ComPtr<ID3D12Resource>       m_indexBufferUpload;
-	D3D12_INDEX_BUFFER_VIEW                      m_indexBufferView;
-	Microsoft::WRL::ComPtr<ID3D12Resource>       m_boxColors;
-	Microsoft::WRL::ComPtr<ID3D12Resource>       m_boxColorsUpload;
+	Microsoft::WRL::ComPtr<ID3D12Resource>       m_VertexBuffer;
+	Microsoft::WRL::ComPtr<ID3D12Resource>       m_VertexBufferUpload;
+	D3D12_VERTEX_BUFFER_VIEW                     m_VertexBufferView[3];
+	Microsoft::WRL::ComPtr<ID3D12Resource>       m_IndexBuffer;
+	Microsoft::WRL::ComPtr<ID3D12Resource>       m_IndexBufferUpload;
+	D3D12_INDEX_BUFFER_VIEW                      m_IndexBufferView;
+	Microsoft::WRL::ComPtr<ID3D12Resource>       m_BoxColors;
+	Microsoft::WRL::ComPtr<ID3D12Resource>       m_BoxColorsUpload;
 
-	Microsoft::WRL::ComPtr<ID3D12Resource>       m_instanceData;
-   // Microsoft::WRL::ComPtr<ID3D12Resource>       m_instanceDataUpload;
-	uint8_t*                                     m_mappedInstanceData;
-	D3D12_GPU_VIRTUAL_ADDRESS                    m_instanceDataGpuAddr;
+	Microsoft::WRL::ComPtr<ID3D12Resource>       m_InstanceData;
+	uint8_t*                                     m_MappedInstanceData;
+	D3D12_GPU_VIRTUAL_ADDRESS                    m_InstanceDataGpuAddr;
 
 	// A synchronization fence and an event. These members will be used
 	// to synchronize the CPU with the GPU so that there will be no
 	// contention for the instance data. 
-	Microsoft::WRL::ComPtr<ID3D12Fence>          m_fence;
-	Microsoft::WRL::Wrappers::Event              m_fenceEvent;
+	Microsoft::WRL::ComPtr<ID3D12Fence>          m_Fence;
+	Microsoft::WRL::Wrappers::Event              m_FenceEvent;
 
 	struct aligned_deleter { void operator()(void* p) { _aligned_free(p); } };
 
 	std::unique_ptr<Instance[]>                             m_CPUInstanceData;
-	std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>   m_rotationQuaternions;
-	std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>   m_velocities;
-	uint32_t                                                m_usedInstanceCount;
+	std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>   m_RotationQuaternions;
+	std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>   m_Velocities;
+	uint32_t                                                m_UsedInstanceCount;
 
-	DirectX::XMFLOAT4X4                         m_proj;
-	DirectX::XMFLOAT4X4                         m_clip;
-	Lights                                      m_lights;
-	float                                       m_pitch;
-	float                                       m_yaw;
+	DirectX::XMFLOAT4X4                         m_Proj;
+	DirectX::XMFLOAT4X4                         m_Clip;
+	Lights                                      m_Lights;
+	float                                       m_Pitch;
+	float                                       m_Yaw;
 
-	std::default_random_engine                  m_randomEngine;
+	std::default_random_engine                  m_RandomEngine;
 
 	virtual void Update(DX::StepTimer const& timer) override;
 	virtual void Render() override;

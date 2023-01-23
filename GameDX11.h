@@ -43,71 +43,43 @@ public:
 	virtual void OnDisplayChange() override;
 	virtual void OnWindowSizeChanged(int width, int height) override;
 
-    uint32_t GetCurrentInstanceCount() const { return m_usedInstanceCount; };
+    uint32_t GetCurrentInstanceCount() const { return m_UsedInstanceCount; };
 
 private:
     // Device resources.
-    std::unique_ptr<DX::DeviceResourcesDX11>    m_deviceResources;
-
-    // Rendering loop timer.
-    DX::StepTimer                           m_timer;
-
-    // Input devices.
-    std::unique_ptr<DirectX11::GamePad>       m_gamePad;
-    //std::unique_ptr<DirectX11::Keyboard>      m_keyboard;
-    std::unique_ptr<DirectX11::Mouse>         m_mouse;
-
-    DirectX11::GamePad::ButtonStateTracker    m_gamePadButtons;
-    DirectX11::Keyboard::KeyboardStateTracker m_keyboardButtons;
-    bool                                    m_gamepadPresent;
+    std::unique_ptr<DX::DeviceResourcesDX11>      m_DeviceResources;
 
     // DirectXTK objects.
-    std::unique_ptr<DirectX11::SpriteBatch>       m_batch;
-    std::unique_ptr<DirectX11::SpriteFont>        m_smallFont;
-    std::unique_ptr<DirectX11::SpriteFont>        m_ctrlFont;
+    std::unique_ptr<DirectX11::SpriteBatch>       m_SpriteBatch;
+    std::unique_ptr<DirectX11::SpriteFont>        m_SmallFont;
 
     //--------------------------------------------------------------------------------------
     // Sample Objects.
     //--------------------------------------------------------------------------------------
 
-    // Instance vertex definition
-    struct Instance
-    {
-        DirectX::XMFLOAT4 quaternion;
-        DirectX::XMFLOAT4 positionAndScale;
-    };
-
-    // Light data structure (maps to constant buffer in pixel shader)
-    struct Lights
-    {
-        DirectX::XMFLOAT4 directional;
-        DirectX::XMFLOAT4 pointPositions[c_pointLightCount];
-        DirectX::XMFLOAT4 pointColors[c_pointLightCount];
-    };
-
-    Microsoft::WRL::ComPtr<ID3D11InputLayout>   m_inputLayout;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_vertexBuffer;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_indexBuffer;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_instanceData;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_boxColors;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_vertexConstants;
-    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_pixelConstants;
-    Microsoft::WRL::ComPtr<ID3D11VertexShader>  m_vertexShader;
-    Microsoft::WRL::ComPtr<ID3D11PixelShader>   m_pixelShader;
+    Microsoft::WRL::ComPtr<ID3D11InputLayout>   m_InputLayout;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_VertexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_IndexBuffer;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_InstanceData;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_BoxColors;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_VertexConstants;
+    Microsoft::WRL::ComPtr<ID3D11Buffer>        m_PixelConstants;
+    Microsoft::WRL::ComPtr<ID3D11VertexShader>  m_VertexShader;
+    Microsoft::WRL::ComPtr<ID3D11PixelShader>   m_PixelShader;
 
     struct aligned_deleter { void operator()(void* p) { _aligned_free(p); } };
 
     std::unique_ptr<Instance[]>                             m_CPUInstanceData;
-    std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>   m_rotationQuaternions;
-    std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>   m_velocities;
-    uint32_t                                                m_usedInstanceCount;
+    std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>   m_RotationQuaternions;
+    std::unique_ptr<DirectX::XMVECTOR[], aligned_deleter>   m_Velocities;
+    uint32_t                                                m_UsedInstanceCount;
 
-    DirectX::XMFLOAT4X4                         m_proj;
-    Lights                                      m_lights;
-    float                                       m_pitch;
-    float                                       m_yaw;
+    DirectX::XMFLOAT4X4                         m_Proj;
+    Lights                                      m_Lights;
+    float                                       m_Pitch;
+    float                                       m_Yaw;
 
-    std::default_random_engine                  m_randomEngine;
+    std::default_random_engine                  m_RandomEngine;
 
 	virtual void Update(DX::StepTimer const& timer) override;
 	virtual void Render() override;

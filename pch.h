@@ -76,48 +76,41 @@
 #include <wrl.h>
 #include <shellapi.h>
 
-#include "DirectXTK11/Inc/GamePad.h"
-#include "DirectXTK11/Inc/Keyboard.h"
-#include "DirectXTK11/Inc/Mouse.h"
 #include "DirectXTK11/Inc/SimpleMath.h"
 
-#include "DirectXTK12/Inc/GamePad.h"
-#include "DirectXTK12/Inc/Keyboard.h"
-#include "DirectXTK12/Inc/Mouse.h"
 #include "DirectXTK12/Inc/SimpleMath.h"
 
 #include "Shared.h"
 #include "BaseGame.h"
-#include "BufferHelpers.h"
-#include "CommonStates.h"
-#include "DDSTextureLoader.h"
+//#include "BufferHelpers.h"
+//#include "CommonStates.h"
+//#include "DDSTextureLoader.h"
 #include "DescriptorHeap.h"
-#include "DirectXHelpers.h"
+//#include "DirectXHelpers.h"
 #include "EffectPipelineStateDescription.h"
-#include "Effects.h"
-#include "GamePad.h"
-#include "GeometricPrimitive.h"
+//#include "Effects.h"
+//#include "GamePad.h"
+//#include "GeometricPrimitive.h"
 #include "GraphicsMemory.h"
-#include "Keyboard.h"
-#include "Model.h"
-#include "Mouse.h"
-#include "PostProcess.h"
+//#include "Keyboard.h"
+//#include "Model.h"
+//#include "Mouse.h"
+//#include "PostProcess.h"
 #include "PrimitiveBatch.h"
 #include "RenderTargetState.h"
 #include "ResourceUploadBatch.h"
-#include "ScreenGrab.h"
+//#include "ScreenGrab.h"
 #include "SimpleMath.h"
 #include "SpriteBatch.h"
 #include "SpriteFont.h"
 #include "VertexTypes.h"
-#include "WICTextureLoader.h"
+//#include "WICTextureLoader.h"
 
 
 enum class RenderType
 {
 	DirectX11 = 0,
     DirectX12 = 1,
-    Direct3d11on12 = 2
 };
 
 namespace
@@ -126,7 +119,7 @@ namespace
     // Constants
     //--------------------------------------------------------------------------------------
     const uint32_t  c_maxInstances = 200000;
-    const uint32_t  c_startInstanceCount = 500;
+    const uint32_t  c_startInstanceCount = 200;
     const uint32_t  c_minInstanceCount = 1000;
     const float     c_boxBounds = 60.0f;
     size_t          c_cubeIndexCount = 36;

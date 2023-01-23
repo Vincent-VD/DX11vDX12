@@ -36,12 +36,28 @@ public:
 protected:
 
 	// Application state
-	HWND                                                m_window;
-	int                                                 m_outputWidth;
-	int                                                 m_outputHeight;
+	HWND                                                m_Window;
+	int                                                 m_OutputWidth;
+	int                                                 m_OutputHeight;
 
 	// Game state
-	DX::StepTimer                                       m_timer;
+	DX::StepTimer                                       m_Timer;
+
+	// Instance vertex definition
+	struct Instance
+	{
+		DirectX::XMFLOAT4 quaternion;
+		DirectX::XMFLOAT4 positionAndScale;
+	};
+
+	// Light data structure (maps to constant buffer in pixel shader)
+	struct Lights
+	{
+		DirectX::XMFLOAT4 directional;
+		DirectX::XMFLOAT4 pointPositions[c_pointLightCount];
+		DirectX::XMFLOAT4 pointColors[c_pointLightCount];
+	};
+
 
 private:
 
@@ -52,8 +68,5 @@ private:
 
 	virtual void CreateDeviceDependentResources() = 0;
 	virtual void CreateWindowSizeDependentResources() = 0;
-
-	// Root assets path.
-	std::wstring m_assetsPath;
 };
 

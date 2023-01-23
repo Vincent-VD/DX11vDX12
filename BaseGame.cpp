@@ -2,9 +2,9 @@
 #include "BaseGame.h"
 
 BaseGame::BaseGame() noexcept
-	: m_window(nullptr)
-	, m_outputWidth(800)
-	, m_outputHeight(600)
+	: m_Window(nullptr)
+	, m_OutputWidth(800)
+	, m_OutputHeight(600)
 {
 	WCHAR assetsPath[512];
 }
@@ -35,8 +35,8 @@ void BaseGame::OnDisplayChange()
 
 void BaseGame::OnWindowSizeChanged(int width, int height)
 {
-	m_outputWidth = width;
-	m_outputHeight = height;
+	m_OutputWidth = width;
+	m_OutputHeight = height;
 }
 
 void BaseGame::GetDefaultSize(int& width, int& height) const noexcept
@@ -47,6 +47,6 @@ void BaseGame::GetDefaultSize(int& width, int& height) const noexcept
 
 void BaseGame::GetCurrentWindowSize(int& width, int& height) const noexcept
 {
-	width = m_outputWidth;
-	height = m_outputHeight;
+	width = m_OutputWidth;
+	height = m_OutputHeight;
 }

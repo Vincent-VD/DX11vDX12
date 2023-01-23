@@ -4,6 +4,7 @@
 
 class GameDX11;
 class GameDX12;
+class StepTimer;
 
 class Logger
 {

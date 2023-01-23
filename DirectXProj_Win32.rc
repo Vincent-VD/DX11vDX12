@@ -56,7 +56,6 @@ BEGIN
     BEGIN
         MENUITEM "DirectX 11",                  ID_RENDERMODE_DIRECTX11, CHECKED
         MENUITEM "DirectX 12",                  ID_RENDERMODE_DIRECTX12
-        MENUITEM "Direct3D 11 On 12",           ID_RENDERMODE_DIRECT3D11ON12
     END
 END
 

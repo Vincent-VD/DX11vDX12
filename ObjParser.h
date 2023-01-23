@@ -1,4 +1,5 @@
 #pragma once
+#include "VertexTypes.h"
 #include "string"
 #include "vector"
 #include "iostream"

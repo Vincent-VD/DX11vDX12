@@ -50,7 +50,7 @@ extern "C"
 // Entry point
 int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow)
 {
-	//using namespace Game;
+	//Show console
 	AllocConsole();
 	freopen("CONIN$", "r", stdin);
 	freopen("CONOUT$", "w", stdout);
@@ -115,6 +115,7 @@ int WINAPI wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, 
 
 		Game::g_game->Initialize(hwnd, rc.right - rc.left, rc.bottom - rc.top);
 
+
 #define DX11
 	}
 
@@ -161,8 +162,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 		break;
 	case RenderType::DirectX12:
 		game = reinterpret_cast<GameDX12*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
-		break;
-	case RenderType::Direct3d11on12:
 		break;
 	}
 
@@ -232,23 +231,6 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 			break;
 		}
 		break;
-
-	/*case WM_LBUTTONDOWN:
-		if(DragDetect(hWnd, initMousePos))
-		{
-			const int xDrag{ GetSystemMetrics(SM_CXDRAG) };
-			const int yDrag{ GetSystemMetrics(SM_CYDRAG) };
-			ModelManager::GetInstance()->SetDrag(xDrag, yDrag);
-			std::cout << "AFGHDFSUIJ\n";
-		}
-
-	case WM_RBUTTONDOWN:
-		if (DragDetect(hWnd, initMousePos))
-		{
-			const int xDrag{ GetSystemMetrics(SM_CXDRAG) };
-			const int yDrag{ GetSystemMetrics(SM_CYDRAG) };
-			ModelManager::GetInstance()->SetDrag(xDrag, yDrag);
-		}*/
 
 	case WM_SIZE:
 		if (wParam == SIZE_MINIMIZED)
@@ -399,23 +381,6 @@ void ExitGame() noexcept
 	PostQuitMessage(0);
 }
 
-//void AddMenus(HWND hWnd)
-//{
-//    HMENU hMenubar;
-//    HMENU hMenu;
-//
-//    hMenubar = CreateMenu();
-//    hMenu = CreateMenu();
-//
-//    AppendMenuW(hMenu, MF_STRING, static_cast<UINT>(RenderType::DirectX11), L"&DirectX11");
-//    AppendMenuW(hMenu, MF_STRING, static_cast<UINT>(RenderType::DirectX12), L"&DirectX12");
-//    AppendMenuW(hMenu, MF_STRING, static_cast<UINT>(RenderType::Direct3d11on12), L"&Direct3D11On12");
-//
-//    AppendMenuW(hMenubar, MF_POPUP, (UINT_PTR)hMenu, L"&Render Mode");
-//    SetMenu(hWnd, hMenubar);
-//}
-//
-
 void SwitchRenderMode()
 {
 	using namespace Game;
@@ -426,12 +391,8 @@ void SwitchRenderMode()
 		std::cout << "DirectX 12\n";
 		break;
 	case RenderType::DirectX12:
-		g_RenderType = RenderType::Direct3d11on12;
-		std::cout << "Direct3D 11 on 12\n";
-		break;
-	case RenderType::Direct3d11on12:
 		g_RenderType = RenderType::DirectX11;
-		std::cout << "DirectX 11\n";
+		std::cout << "Direct3D 11 on 12\n";
 		break;
 	}
 
