@@ -107,7 +107,7 @@ void GameDX12::Update(DX::StepTimer const& timer)
 
 	if (GetAsyncKeyState('R'))
 	{
-		m_UsedInstanceCount = std::max(c_minInstanceCount, m_UsedInstanceCount - 100);
+		m_UsedInstanceCount = std::max(c_minInstanceCount, m_UsedInstanceCount - c_increments);
 		if(m_UsedInstanceCount <= c_maxInstances)
 		{
 			std::cout << m_UsedInstanceCount << std::endl;
@@ -115,7 +115,7 @@ void GameDX12::Update(DX::StepTimer const& timer)
 	}
 	if (GetAsyncKeyState('E'))
 	{
-		m_UsedInstanceCount = std::min(c_maxInstances, m_UsedInstanceCount + 100);
+		m_UsedInstanceCount = std::min(c_maxInstances, m_UsedInstanceCount + c_increments);
 		if (m_UsedInstanceCount <= c_maxInstances)
 		{
 			std::cout << m_UsedInstanceCount << std::endl;

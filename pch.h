@@ -119,7 +119,8 @@ namespace
     // Constants
     //--------------------------------------------------------------------------------------
     const uint32_t  c_maxInstances = 200000;
-    const uint32_t  c_startInstanceCount = 200;
+    const uint32_t  c_startInstanceCount = 50;
+    const uint32_t  c_increments = 50;
     const uint32_t  c_minInstanceCount = 1000;
     const float     c_boxBounds = 60.0f;
     size_t          c_cubeIndexCount = 36;
