@@ -9,8 +9,12 @@ Figure showing what render scene look like.
 
 NOTE: When building project, "files" folder still needs to be added, containing stanford dragon OBJ file and Segoe 18 spritefont.
 
-Controls:
+# Controls:
+
 W,A,S,D: Rotate Camera
+
 E: Increase instances
+
 Q: Decrease amount of instances
+
 Spacebar: Reset scene
